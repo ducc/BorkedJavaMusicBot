@@ -14,9 +14,11 @@ public abstract class Command {
 
     protected class Context {
         public MessageReceivedEvent event;
+        public String[] args;
 
-        Context(MessageReceivedEvent event) {
-            this.event = event;
+        public int argsLength() {
+            if (args == null) return 0;
+            return args.length;
         }
 
         public Message reply(String message) {

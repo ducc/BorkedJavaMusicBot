@@ -1,5 +1,9 @@
 package ovh.not.javamusicbot;
 
+import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
+import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
+import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
+import ovh.not.javamusicbot.command.PlayCommand;
 import ovh.not.javamusicbot.command.TestCommand;
 
 import java.util.HashMap;
@@ -9,8 +13,11 @@ class CommandManager {
     private final Map<String, Command> commands = new HashMap<>();
 
     CommandManager() {
+        AudioPlayerManager playerManager = new DefaultAudioPlayerManager();
+        AudioSourceManagers.registerRemoteSources(playerManager);
         register(
-            new TestCommand()
+                new PlayCommand(playerManager),
+                new TestCommand()
         );
     }
 

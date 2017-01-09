@@ -7,7 +7,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 class Listener extends ListenerAdapter {
-    private static final Pattern COMMAND_PATTERN = Pattern.compile("!!!([a-zA-Z]+)");
+    private static final Pattern COMMAND_PATTERN = Pattern.compile("!!!([a-zA-Z]+)\\s+(.*)");
 
     private final CommandManager commandManager;
 
@@ -26,7 +26,11 @@ class Listener extends ListenerAdapter {
         if (command == null) {
             return;
         }
-        Command.Context context = command.new Context(event);
+        Command.Context context = command.new Context();
+        context.event = event;
+        if (matcher.groupCount() > 1) {
+            context.args = matcher.group(2).split("\\s+");
+        }
         command.on(context);
     }
 }
