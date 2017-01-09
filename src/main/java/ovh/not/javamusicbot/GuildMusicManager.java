@@ -3,6 +3,7 @@ package ovh.not.javamusicbot;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 
 import java.util.HashMap;
@@ -14,14 +15,14 @@ public class GuildMusicManager {
     private final Guild guild;
     public final AudioPlayer player;
     public final TrackScheduler scheduler;
-    public final AudioPlayerSendHandler sendHandler;
+    private final AudioPlayerSendHandler sendHandler;
 
     public boolean open = false;
 
-    private GuildMusicManager(Guild guild, AudioPlayerManager playerManager) {
+    private GuildMusicManager(Guild guild, TextChannel textChannel, AudioPlayerManager playerManager) {
         this.guild = guild;
         this.player = playerManager.createPlayer();
-        this.scheduler = new TrackScheduler(player);
+        this.scheduler = new TrackScheduler(player, textChannel);
         this.player.addListener(scheduler);
         this.sendHandler = new AudioPlayerSendHandler(player);
         this.guild.getAudioManager().setSendingHandler(sendHandler);
@@ -32,12 +33,21 @@ public class GuildMusicManager {
         open = true;
     }
 
-    public static GuildMusicManager getOrCreate(Guild guild, AudioPlayerManager playerManager) {
+    public void close() {
+        guild.getAudioManager().closeAudioConnection();
+        open = false;
+    }
+
+    public static GuildMusicManager getOrCreate(Guild guild, TextChannel textChannel, AudioPlayerManager playerManager) {
         if (guilds.containsKey(guild)) {
             return guilds.get(guild);
         }
-        GuildMusicManager musicManager = new GuildMusicManager(guild, playerManager);
+        GuildMusicManager musicManager = new GuildMusicManager(guild, textChannel, playerManager);
         guilds.put(guild, musicManager);
         return musicManager;
+    }
+
+    public static GuildMusicManager get(Guild guild) {
+        return guilds.get(guild);
     }
 }

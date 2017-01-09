@@ -13,21 +13,32 @@ public class PlayCommand extends Command {
     private final AudioPlayerManager playerManager;
 
     public PlayCommand(AudioPlayerManager playerManager) {
-        super("play", "p");
+        super("play", "p", "queue");
         this.playerManager = playerManager;
     }
 
     @Override
     protected void on(Context context) {
         if (context.argsLength() == 0) {
+            context.reply("Usage: `!!!p <link` - plays a song\n" +
+                    "To search youtube, use `!!!p ytsearch: <your search term>`");
             return;
         }
-        GuildMusicManager musicManager = GuildMusicManager.getOrCreate(context.event.getGuild(), playerManager);
+        VoiceChannel channel = context.event.getMember().getVoiceState().getChannel();
+        if (channel == null) {
+            context.reply("You must be in a voice channel!");
+            return;
+        }
+        GuildMusicManager musicManager = GuildMusicManager.getOrCreate(context.event.getGuild(),
+                context.event.getTextChannel(), playerManager);
         playerManager.loadItem(String.join(" ", context.args), new AudioLoadResultHandler() {
             @Override
             public void trackLoaded(AudioTrack audioTrack) {
+                boolean playing = musicManager.player.getPlayingTrack() != null;
                 musicManager.scheduler.queue(audioTrack);
-                context.reply(String.format("Queued **%s**", audioTrack.getInfo().title));
+                if (playing) {
+                    context.reply(String.format("Queued **%s**", audioTrack.getInfo().title));
+                }
             }
 
             @Override
@@ -37,13 +48,17 @@ public class PlayCommand extends Command {
                 } else if (audioPlaylist.isSearchResult()) {
                     trackLoaded(audioPlaylist.getTracks().get(0));
                 } else {
-                    audioPlaylist.getTracks().forEach(musicManager.scheduler::queue);
+                    audioPlaylist.getTracks().forEach(track -> {
+                        musicManager.scheduler.queue(track);
+                        System.out.println(track.getInfo().title);
+                    });
                 }
             }
 
             @Override
             public void noMatches() {
-                context.reply("No song matches found!");
+                context.reply("No song matches found! Usage: `!!!p <link>`\n" +
+                        "To play music from youtube, use `!!!p ytsearch: <your search term>`");
             }
 
             @Override
@@ -53,7 +68,6 @@ public class PlayCommand extends Command {
             }
         });
         if (!musicManager.open) {
-            VoiceChannel channel = context.event.getMember().getVoiceState().getChannel();
             musicManager.open(channel);
         }
     }

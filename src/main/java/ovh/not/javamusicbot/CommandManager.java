@@ -4,7 +4,8 @@ import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import ovh.not.javamusicbot.command.PlayCommand;
-import ovh.not.javamusicbot.command.TestCommand;
+import ovh.not.javamusicbot.command.SkipCommand;
+import ovh.not.javamusicbot.command.StopCommand;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,7 +18,8 @@ class CommandManager {
         AudioSourceManagers.registerRemoteSources(playerManager);
         register(
                 new PlayCommand(playerManager),
-                new TestCommand()
+                new SkipCommand(),
+                new StopCommand()
         );
     }
 
