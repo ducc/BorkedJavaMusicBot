@@ -4,6 +4,7 @@ import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import ovh.not.javamusicbot.command.PlayCommand;
+import ovh.not.javamusicbot.command.QueueCommand;
 import ovh.not.javamusicbot.command.SkipCommand;
 import ovh.not.javamusicbot.command.StopCommand;
 
@@ -18,6 +19,7 @@ class CommandManager {
         AudioSourceManagers.registerRemoteSources(playerManager);
         register(
                 new PlayCommand(playerManager),
+                new QueueCommand(),
                 new SkipCommand(),
                 new StopCommand()
         );

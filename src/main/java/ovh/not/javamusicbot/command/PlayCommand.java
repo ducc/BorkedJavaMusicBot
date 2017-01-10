@@ -13,7 +13,7 @@ public class PlayCommand extends Command {
     private final AudioPlayerManager playerManager;
 
     public PlayCommand(AudioPlayerManager playerManager) {
-        super("play", "p", "queue");
+        super("play", "p");
         this.playerManager = playerManager;
     }
 

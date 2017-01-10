@@ -21,11 +21,7 @@ public class StopCommand extends Command {
             context.reply("Stopped playing music & left the voice channel.");
         } else {
             AudioManager audioManager = guild.getAudioManager();
-            /*if (!audioManager.isConnected()) {
-                context.reply("Not connected to a voice channel!");
-                return;
-            }*/
-           audioManager.closeAudioConnection();
+            audioManager.closeAudioConnection();
             context.reply("Left the voice channel.");
         }
     }
