@@ -55,7 +55,7 @@ public class QueueCommand extends Command {
         builder.append(String.format(SONG_QUEUE_LINE, pageable.getPage(), pageable.getMaxPageRange()));
         int index = 1;
         for (AudioTrack track : pageable.getListForPage()) {
-            builder.append(String.format(QUEUE_LINE, index, track.getInfo().title, track.getInfo().author,
+            builder.append(String.format(QUEUE_LINE, ((pageable.getPage() - 1) * pageable.getPageSize()) + index, track.getInfo().title, track.getInfo().author,
                     formatDuration(track.getDuration())));
             index++;
         }
