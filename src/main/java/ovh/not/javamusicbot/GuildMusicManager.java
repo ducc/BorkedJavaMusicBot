@@ -40,7 +40,9 @@ public class GuildMusicManager {
 
     public static GuildMusicManager getOrCreate(Guild guild, TextChannel textChannel, AudioPlayerManager playerManager) {
         if (guilds.containsKey(guild)) {
-            return guilds.get(guild);
+            GuildMusicManager manager = guilds.get(guild);
+            manager.scheduler.textChannel = textChannel;
+            return manager;
         }
         GuildMusicManager musicManager = new GuildMusicManager(guild, textChannel, playerManager);
         guilds.put(guild, musicManager);

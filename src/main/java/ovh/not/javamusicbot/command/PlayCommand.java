@@ -37,7 +37,8 @@ public class PlayCommand extends Command {
                 boolean playing = musicManager.player.getPlayingTrack() != null;
                 musicManager.scheduler.queue(audioTrack);
                 if (playing) {
-                    context.reply(String.format("Queued **%s**", audioTrack.getInfo().title));
+                    context.reply(String.format("Queued **%s** `[%s]`", audioTrack.getInfo().title,
+                            formatDuration(audioTrack.getDuration())));
                 }
             }
 

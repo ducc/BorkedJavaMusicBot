@@ -11,7 +11,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 public class TrackScheduler extends AudioEventAdapter {
     private final AudioPlayer player;
-    private final TextChannel textChannel;
+    TextChannel textChannel;
     public final Queue<AudioTrack> queue;
 
     TrackScheduler(AudioPlayer player, TextChannel textChannel) {
@@ -39,7 +39,7 @@ public class TrackScheduler extends AudioEventAdapter {
 
     @Override
     public void onTrackStart(AudioPlayer player, AudioTrack track) {
-        textChannel.sendMessage(String.format("Now playing **%s** by **%s** `[%d]`", track.getInfo().title,
-                track.getInfo().author, track.getDuration())).complete();
+        textChannel.sendMessage(String.format("Now playing **%s** by **%s** `[%s]`", track.getInfo().title,
+                track.getInfo().author, CommandUtils.formatDuration(track.getDuration()))).complete();
     }
 }

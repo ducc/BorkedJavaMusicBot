@@ -14,8 +14,10 @@ public class CommandManager {
     CommandManager(Config config) {
         AudioPlayerManager playerManager = new DefaultAudioPlayerManager();
         AudioSourceManagers.registerRemoteSources(playerManager);
-        register(commands,
+        CommandManager.register(commands,
                 new AdminCommand(config),
+                new MoveCommand(),
+                new PauseCommand(),
                 new PlayCommand(playerManager),
                 new QueueCommand(),
                 new SkipCommand(),
