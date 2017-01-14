@@ -6,18 +6,20 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import net.dv8tion.jda.core.entities.TextChannel;
 
+import java.util.LinkedList;
 import java.util.Queue;
-import java.util.concurrent.LinkedBlockingQueue;
 
 public class TrackScheduler extends AudioEventAdapter {
+    private final GuildMusicManager musicManager;
     private final AudioPlayer player;
     TextChannel textChannel;
     public final Queue<AudioTrack> queue;
 
-    TrackScheduler(AudioPlayer player, TextChannel textChannel) {
+    TrackScheduler(GuildMusicManager musicManager, AudioPlayer player, TextChannel textChannel) {
+        this.musicManager = musicManager;
         this.player = player;
         this.textChannel = textChannel;
-        this.queue = new LinkedBlockingQueue<>();
+        this.queue = new LinkedList<>();
     }
 
     public void queue(AudioTrack track) {
@@ -27,7 +29,9 @@ public class TrackScheduler extends AudioEventAdapter {
     }
 
     public void next() {
-        player.startTrack(queue.poll(), false);
+        if (!player.startTrack(queue.poll(), false)) {
+            musicManager.close();
+        }
     }
 
     @Override

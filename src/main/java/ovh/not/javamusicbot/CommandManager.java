@@ -17,11 +17,15 @@ public class CommandManager {
         CommandManager.register(commands,
                 new AdminCommand(config),
                 new MoveCommand(),
+                new NowPlayingCommand(),
                 new PauseCommand(),
                 new PlayCommand(playerManager),
                 new QueueCommand(),
+                new RestartCommand(),
+                new ShuffleCommand(),
                 new SkipCommand(),
-                new StopCommand()
+                new StopCommand(),
+                new VolumeCommand()
         );
     }
 

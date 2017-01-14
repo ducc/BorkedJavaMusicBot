@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class GuildMusicManager {
-    private static final Map<Guild, GuildMusicManager> guilds = new HashMap<>();
+    private static final Map<Guild, GuildMusicManager> GUILDS = new HashMap<>();
 
     private final Guild guild;
     public final AudioPlayer player;
@@ -22,7 +22,7 @@ public class GuildMusicManager {
     private GuildMusicManager(Guild guild, TextChannel textChannel, AudioPlayerManager playerManager) {
         this.guild = guild;
         this.player = playerManager.createPlayer();
-        this.scheduler = new TrackScheduler(player, textChannel);
+        this.scheduler = new TrackScheduler(this, player, textChannel);
         this.player.addListener(scheduler);
         this.sendHandler = new AudioPlayerSendHandler(player);
         this.guild.getAudioManager().setSendingHandler(sendHandler);
@@ -39,17 +39,19 @@ public class GuildMusicManager {
     }
 
     public static GuildMusicManager getOrCreate(Guild guild, TextChannel textChannel, AudioPlayerManager playerManager) {
-        if (guilds.containsKey(guild)) {
-            GuildMusicManager manager = guilds.get(guild);
-            manager.scheduler.textChannel = textChannel;
+        if (GUILDS.containsKey(guild)) {
+            GuildMusicManager manager = GUILDS.get(guild);
+            if (manager.scheduler.textChannel != textChannel) {
+                manager.scheduler.textChannel = textChannel;
+            }
             return manager;
         }
         GuildMusicManager musicManager = new GuildMusicManager(guild, textChannel, playerManager);
-        guilds.put(guild, musicManager);
+        GUILDS.put(guild, musicManager);
         return musicManager;
     }
 
     public static GuildMusicManager get(Guild guild) {
-        return guilds.get(guild);
+        return GUILDS.get(guild);
     }
 }

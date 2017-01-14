@@ -7,7 +7,7 @@ import ovh.not.javamusicbot.GuildMusicManager;
 import java.util.Queue;
 
 public class QueueCommand extends Command {
-    private static final String QUEUE_LINE = "\n`%02d`. **%s** by **%s** `[%s]`";
+    private static final String QUEUE_LINE = "\n`%02d`. %s by %s `[%s]`";
 
     public QueueCommand() {
         super("queue", "list", "q");
@@ -22,13 +22,14 @@ public class QueueCommand extends Command {
         }
         AudioTrack playing = musicManager.player.getPlayingTrack();
         Queue<AudioTrack> queue = musicManager.scheduler.queue;
-        StringBuilder builder = new StringBuilder("__**Song queue**__");
-        builder.append(String.format(QUEUE_LINE, 0, playing.getInfo().title, playing.getInfo().author,
-                formatDuration(playing.getPosition() / 1000) + "/" + formatDuration(playing.getDuration() / 1000)));
+        StringBuilder builder = new StringBuilder("Song queue:");
+        builder.append(String.format(QUEUE_LINE, 0, "**" + playing.getInfo().title + "**", "**"
+                + playing.getInfo().author + "**", formatDuration(playing.getPosition()) + "/"
+                + formatDuration(playing.getDuration())));
         int index = 1;
         for (AudioTrack track : queue) {
             builder.append(String.format(QUEUE_LINE, index, track.getInfo().title, track.getInfo().author,
-                    formatDuration(track.getDuration() / 1000)));
+                    formatDuration(track.getDuration())));
             index++;
         }
         context.reply(builder.toString());
