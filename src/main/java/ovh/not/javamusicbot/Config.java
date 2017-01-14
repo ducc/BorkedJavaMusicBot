@@ -1,5 +1,6 @@
 package ovh.not.javamusicbot;
 
-class Config {
+public class Config {
     String token;
+    public String owner;
 }

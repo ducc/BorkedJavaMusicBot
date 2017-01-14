@@ -34,7 +34,11 @@ class Listener extends ListenerAdapter {
         Command.Context context = command.new Context();
         context.event = event;
         if (matcher.groupCount() > 1) {
-            context.args = matcher.group(2).split("\\s+");
+            String[] matches = matcher.group(2).split("\\s+");
+            if (matches.length > 0 && matches[0].equals("")) {
+                matches = new String[0];
+            }
+            context.args = matches;
         }
         command.on(context);
     }

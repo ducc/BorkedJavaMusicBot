@@ -11,7 +11,7 @@ public class StopCommand extends Command {
     }
 
     @Override
-    protected void on(Context context) {
+    public void on(Context context) {
         Guild guild = context.event.getGuild();
         GuildMusicManager musicManager = GuildMusicManager.get(guild);
         if (musicManager != null) {

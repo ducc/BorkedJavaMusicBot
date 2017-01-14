@@ -18,8 +18,8 @@ public class PlayCommand extends Command {
     }
 
     @Override
-    protected void on(Context context) {
-        if (context.argsLength() == 0) {
+    public void on(Context context) {
+        if (context.args.length == 0) {
             context.reply("Usage: `!!!p <link` - plays a song\n" +
                     "To search youtube, use `!!!p ytsearch: <your search term>`");
             return;
@@ -48,10 +48,8 @@ public class PlayCommand extends Command {
                 } else if (audioPlaylist.isSearchResult()) {
                     trackLoaded(audioPlaylist.getTracks().get(0));
                 } else {
-                    audioPlaylist.getTracks().forEach(track -> {
-                        musicManager.scheduler.queue(track);
-                        System.out.println(track.getInfo().title);
-                    });
+                    audioPlaylist.getTracks().forEach(musicManager.scheduler::queue);
+                    context.reply(String.format("Added **%d songs** to the queue!", audioPlaylist.getTracks().size()));
                 }
             }
 

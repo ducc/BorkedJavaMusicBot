@@ -14,7 +14,7 @@ public final class MusicBot {
 
     public static void main(String[] args) {
         Config config = new Toml().read(new File(CONFIG_PATH)).to(Config.class);
-        CommandManager commandManager = new CommandManager();
+        CommandManager commandManager = new CommandManager(config);
         JDA jda;
         try {
             jda = new JDABuilder(AccountType.BOT)

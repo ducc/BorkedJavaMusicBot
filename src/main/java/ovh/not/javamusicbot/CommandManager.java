@@ -3,21 +3,19 @@ package ovh.not.javamusicbot;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
-import ovh.not.javamusicbot.command.PlayCommand;
-import ovh.not.javamusicbot.command.QueueCommand;
-import ovh.not.javamusicbot.command.SkipCommand;
-import ovh.not.javamusicbot.command.StopCommand;
+import ovh.not.javamusicbot.command.*;
 
 import java.util.HashMap;
 import java.util.Map;
 
-class CommandManager {
+public class CommandManager {
     private final Map<String, Command> commands = new HashMap<>();
 
-    CommandManager() {
+    CommandManager(Config config) {
         AudioPlayerManager playerManager = new DefaultAudioPlayerManager();
         AudioSourceManagers.registerRemoteSources(playerManager);
-        register(
+        register(commands,
+                new AdminCommand(config),
                 new PlayCommand(playerManager),
                 new QueueCommand(),
                 new SkipCommand(),
@@ -25,14 +23,14 @@ class CommandManager {
         );
     }
 
-    private void register(Command... commands) {
-        for (Command command : commands) {
+    public static void register(Map<String, Command> commands, Command... cmds) {
+        for (Command command : cmds) {
             for (String name : command.names) {
-                if (this.commands.containsKey(name)) {
+                if (commands.containsKey(name)) {
                     throw new RuntimeException(String.format("Command name collision %s in %s!", name,
                             command.getClass().getName()));
                 }
-                this.commands.put(name, command);
+                commands.put(name, command);
             }
         }
     }
