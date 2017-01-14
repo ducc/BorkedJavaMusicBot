@@ -8,7 +8,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 class Listener extends ListenerAdapter {
-    private static final Pattern COMMAND_PATTERN = Pattern.compile("!!!([a-zA-Z]+)(?:\\s+)?(.*)?");
+    private static final Pattern COMMAND_PATTERN = Pattern.compile("^!!!([a-zA-Z]+)(?:\\s+)?(.*)?");
 
     private final CommandManager commandManager;
 
