@@ -64,11 +64,4 @@ public class QueueCommand extends Command {
         }
         context.reply(builder.toString());
     }
-
-    @SuppressWarnings("unchecked")
-    private void k(Queue<AudioTrack> queue) {
-        Pageable<AudioTrack> pageable = new Pageable<>((List<AudioTrack>) queue);
-        pageable.setPageSize(10);
-
-    }
 }
