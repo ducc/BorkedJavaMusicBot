@@ -9,13 +9,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class CommandManager {
-    private final Map<String, Command> commands = new HashMap<>();
+    public final Map<String, Command> commands = new HashMap<>();
 
     CommandManager(Config config) {
         AudioPlayerManager playerManager = new DefaultAudioPlayerManager();
         AudioSourceManagers.registerRemoteSources(playerManager);
         CommandManager.register(commands,
                 new AdminCommand(config),
+                new HelpCommand(this, config),
                 new MoveCommand(),
                 new NowPlayingCommand(),
                 new PauseCommand(),

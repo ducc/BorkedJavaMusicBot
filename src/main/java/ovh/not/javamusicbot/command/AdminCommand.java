@@ -15,11 +15,12 @@ public class AdminCommand extends Command {
 
     public AdminCommand(Config config) {
         super("admin");
+        hide = true;
         this.config = config;
         CommandManager.register(subCommands, new StopCommand());
         StringBuilder builder = new StringBuilder("Subcommands:");
         subCommands.values().forEach(command -> builder.append(" ").append(command.names[0]));
-        this.subCommandsString = builder.toString();
+        subCommandsString = builder.toString();
     }
 
     @Override

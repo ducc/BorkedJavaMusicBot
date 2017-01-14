@@ -5,6 +5,7 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 public abstract class Command extends CommandUtils {
     public final String[] names;
+    public boolean hide = false;
 
     protected Command(String name, String... names) {
         this.names = new String[names.length + 1];
