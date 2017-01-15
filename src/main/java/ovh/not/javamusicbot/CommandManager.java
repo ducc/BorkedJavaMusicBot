@@ -3,6 +3,8 @@ package ovh.not.javamusicbot;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
+import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import net.dv8tion.jda.core.entities.Member;
 import ovh.not.javamusicbot.command.*;
 
 import java.util.HashMap;
@@ -10,18 +12,20 @@ import java.util.Map;
 
 public class CommandManager {
     public final Map<String, Command> commands = new HashMap<>();
+    public final Map<Member, Selection<AudioTrack, String>> selectors = new HashMap<>();
 
     CommandManager(Config config) {
         AudioPlayerManager playerManager = new DefaultAudioPlayerManager();
         AudioSourceManagers.registerRemoteSources(playerManager);
         CommandManager.register(commands,
                 new AdminCommand(config),
+                new ChooseCommand(this),
                 new HelpCommand(this, config),
                 new JumpCommand(),
                 new MoveCommand(),
                 new NowPlayingCommand(),
                 new PauseCommand(),
-                new PlayCommand(playerManager),
+                new PlayCommand(this, playerManager),
                 new QueueCommand(),
                 new ReorderCommand(),
                 new RepeatCommand(),

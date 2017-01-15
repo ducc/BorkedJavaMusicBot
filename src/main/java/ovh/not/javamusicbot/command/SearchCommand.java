@@ -14,8 +14,7 @@ public class SearchCommand extends Command {
     @Override
     public void on(Context context) {
         if (context.args.length == 0) {
-            context.reply("Usage: `!!!p <link` - plays a song\n" +
-                    "To search youtube, use `!!!p ytsearch: <your search term>`");
+            context.reply("Usage: `!!!search <term>` - searches for a song on youtube");
             return;
         }
         String[] args = new String[context.args.length + 1];

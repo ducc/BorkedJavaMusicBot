@@ -7,21 +7,25 @@ import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import ovh.not.javamusicbot.Command;
+import ovh.not.javamusicbot.CommandManager;
 import ovh.not.javamusicbot.GuildMusicManager;
+import ovh.not.javamusicbot.Selection;
 
 public class PlayCommand extends Command {
+    private final CommandManager commandManager;
     private final AudioPlayerManager playerManager;
 
-    public PlayCommand(AudioPlayerManager playerManager) {
+    public PlayCommand(CommandManager commandManager, AudioPlayerManager playerManager) {
         super("play", "p");
+        this.commandManager = commandManager;
         this.playerManager = playerManager;
     }
 
     @Override
     public void on(Context context) {
         if (context.args.length == 0) {
-            context.reply("Usage: `!!!p <link` - plays a song\n" +
-                    "To search youtube, use `!!!p ytsearch: <your search term>`");
+            context.reply("Usage: `!!!p <link>` - plays a song\n" +
+                    "To search youtube, use `!!!search: <your search term>`");
             return;
         }
         VoiceChannel channel = context.event.getMember().getVoiceState().getChannel();
@@ -61,7 +65,23 @@ public class PlayCommand extends Command {
             if (audioPlaylist.getSelectedTrack() != null) {
                 trackLoaded(audioPlaylist.getSelectedTrack());
             } else if (audioPlaylist.isSearchResult()) {
-                trackLoaded(audioPlaylist.getTracks().get(0));
+                int playlistSize = audioPlaylist.getTracks().size();
+                int size = playlistSize > 5 ? 5 : playlistSize;
+                AudioTrack[] audioTracks = new AudioTrack[size];
+                for (int i = 0; i < audioTracks.length; i++) {
+                    audioTracks[i] = audioPlaylist.getTracks().get(i);
+                }
+                Selection.Formatter<AudioTrack, String> formatter = track -> String.format("%s by %s `[%s]`",
+                        track.getInfo().title, track.getInfo().author, formatDuration(track.getDuration()));
+                Selection<AudioTrack, String> selection = new Selection<>(audioTracks, formatter, (found, track) -> {
+                    if (!found) {
+                        context.reply("Selection cancelled!");
+                        return;
+                    }
+                    trackLoaded(track);
+                });
+                commandManager.selectors.put(context.event.getMember(), selection);
+                context.reply(selection.createMessage());
             } else {
                 audioPlaylist.getTracks().forEach(musicManager.scheduler::queue);
                 context.reply(String.format("Added **%d songs** to the queue!", audioPlaylist.getTracks().size()));
