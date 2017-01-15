@@ -30,6 +30,7 @@ public class GuildMusicManager {
 
     public void open(VoiceChannel channel) {
         guild.getAudioManager().openAudioConnection(channel);
+        guild.getAudioManager().setSelfDeafened(true);
         open = true;
     }
 

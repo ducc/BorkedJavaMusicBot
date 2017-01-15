@@ -17,7 +17,7 @@ public class StopCommand extends Command {
         if (musicManager != null) {
             musicManager.close();
             musicManager.scheduler.queue.clear();
-            musicManager.scheduler.next();
+            musicManager.scheduler.next(null);
             context.reply("Stopped playing music & left the voice channel.");
         } else {
             AudioManager audioManager = guild.getAudioManager();

@@ -24,6 +24,7 @@ public class CommandManager {
                 new PlayCommand(playerManager),
                 new QueueCommand(),
                 new ReorderCommand(),
+                new RepeatCommand(),
                 new RestartCommand(),
                 new ShuffleCommand(),
                 new SkipCommand(),

@@ -15,6 +15,8 @@ public class TrackScheduler extends AudioEventAdapter {
     TextChannel textChannel;
     public final Queue<AudioTrack> queue;
 
+    public boolean repeat = false;
+
     TrackScheduler(GuildMusicManager musicManager, AudioPlayer player, TextChannel textChannel) {
         this.musicManager = musicManager;
         this.player = player;
@@ -28,8 +30,14 @@ public class TrackScheduler extends AudioEventAdapter {
         }
     }
 
-    public void next() {
-        if (!player.startTrack(queue.poll(), false)) {
+    public void next(AudioTrack last) {
+        AudioTrack track;
+        if (repeat && last != null) {
+            track = last.makeClone();
+        } else {
+            track = queue.poll();
+        }
+        if (!player.startTrack(track, false)) {
             musicManager.close();
         }
     }
@@ -37,7 +45,7 @@ public class TrackScheduler extends AudioEventAdapter {
     @Override
     public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
         if (endReason.mayStartNext) {
-            next();
+            next(track);
         }
     }
 

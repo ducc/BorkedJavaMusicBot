@@ -3,9 +3,9 @@ package ovh.not.javamusicbot.command;
 import ovh.not.javamusicbot.Command;
 import ovh.not.javamusicbot.GuildMusicManager;
 
-public class SkipCommand extends Command {
-    public SkipCommand() {
-        super("skip", "s", "next");
+public class RepeatCommand extends Command {
+    public RepeatCommand() {
+        super("repeat", "loop");
     }
 
     @Override
@@ -15,6 +15,8 @@ public class SkipCommand extends Command {
             context.reply("No music is playing on this guild!");
             return;
         }
-        musicManager.scheduler.next(null);
+        boolean repeat = !musicManager.scheduler.repeat;
+        musicManager.scheduler.repeat = repeat;
+        context.reply("**" + (repeat ? "Enabled" : "Disabled") + "** song repeating!");
     }
 }
