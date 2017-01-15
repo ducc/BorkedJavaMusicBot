@@ -4,6 +4,7 @@ import com.moandjiezana.toml.Toml;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
+import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 
 import javax.security.auth.login.LoginException;
@@ -19,10 +20,12 @@ public final class MusicBot {
         try {
             jda = new JDABuilder(AccountType.BOT)
                     .setToken(config.token)
-                    .addListener(new Listener(commandManager))
+                    .addListener(new Listener(config, commandManager))
                     .buildBlocking();
         } catch (LoginException | InterruptedException | RateLimitedException e) {
             e.printStackTrace();
+            return;
         }
+        jda.getPresence().setGame(Game.of(config.game));
     }
 }

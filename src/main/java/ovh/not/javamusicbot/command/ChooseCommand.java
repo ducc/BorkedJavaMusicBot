@@ -10,7 +10,7 @@ public class ChooseCommand extends Command {
     private final CommandManager commandManager;
 
     public ChooseCommand(CommandManager commandManager) {
-        super("choose", "pick", "select", "cancel");
+        super("choose", "pick", "select", "cancel", "c");
         this.commandManager = commandManager;
     }
 

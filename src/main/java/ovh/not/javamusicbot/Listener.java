@@ -8,12 +8,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 class Listener extends ListenerAdapter {
-    private static final Pattern COMMAND_PATTERN = Pattern.compile("^!!!([a-zA-Z]+)(?:\\s+)?(.*)?");
-
     private final CommandManager commandManager;
+    private final Pattern commandPattern;
 
-    Listener(CommandManager commandManager) {
+    Listener(Config config, CommandManager commandManager) {
         this.commandManager = commandManager;
+        this.commandPattern = Pattern.compile(config.regex);
     }
 
     @Override
@@ -22,7 +22,7 @@ class Listener extends ListenerAdapter {
         if (author.isBot() || author.getId().equalsIgnoreCase(event.getJDA().getSelfUser().getId())) {
             return;
         }
-        Matcher matcher = COMMAND_PATTERN.matcher(event.getMessage().getContent());
+        Matcher matcher = commandPattern.matcher(event.getMessage().getContent());
         if (!matcher.find()) {
             return;
         }

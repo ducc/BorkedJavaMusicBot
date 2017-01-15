@@ -14,7 +14,7 @@ public class QueueCommand extends Command {
     private static final String CURRENT_LINE = "__Currently playing:__\n" + BASE_LINE;
     private static final String QUEUE_LINE = "\n`%02d` " + BASE_LINE;
     private static final String SONG_QUEUE_LINE = "\n\n__Song queue:__ (Page **%d** of **%d**)";
-    private static final int PAGE_SIZE = 15;
+    private static final int PAGE_SIZE = 10;
 
     public QueueCommand() {
         super("queue", "list", "q");
