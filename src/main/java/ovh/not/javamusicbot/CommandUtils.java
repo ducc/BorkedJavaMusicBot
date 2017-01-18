@@ -1,6 +1,6 @@
 package ovh.not.javamusicbot;
 
-class CommandUtils {
+abstract class CommandUtils {
     private static final String DURATION_FORMAT = "%02d:%02d";
 
     protected static String formatDuration(long duration) {

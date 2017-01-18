@@ -21,7 +21,7 @@ public class Selection<T, R> {
             i++;
         }
         return builder.append("\n\n**To choose**, use `!!!choose <number>`\nExample: `!!!choose 2` would pick the "
-                + "second option.").toString();
+                + "second option.\n**To cancel**, use `!!!cancel`.").toString();
     }
 
     public interface Formatter<T, R> {
