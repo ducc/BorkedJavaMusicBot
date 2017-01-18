@@ -21,7 +21,6 @@ public class CommandManager {
                 new AdminCommand(config),
                 new ChooseCommand(this),
                 new DumpCommand(),
-                new GuildsCommand(),
                 new HelpCommand(this, config),
                 new JumpCommand(),
                 new MoveCommand(),

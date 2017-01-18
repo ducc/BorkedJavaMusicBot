@@ -1,9 +1,13 @@
 package ovh.not.javamusicbot.command;
 
+import jdk.nashorn.api.scripting.NashornScriptEngineFactory;
 import ovh.not.javamusicbot.Command;
 import ovh.not.javamusicbot.CommandManager;
 import ovh.not.javamusicbot.Config;
 
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineFactory;
+import javax.script.ScriptException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -14,10 +18,13 @@ public class AdminCommand extends Command {
     private final String subCommandsString;
 
     public AdminCommand(Config config) {
-        super("admin");
+        super("admin", "a");
         hide = true;
         this.config = config;
-        CommandManager.register(subCommands, new StopCommand());
+        CommandManager.register(subCommands,
+                new EvalCommand(),
+                new StopCommand()
+        );
         StringBuilder builder = new StringBuilder("Subcommands:");
         subCommands.values().forEach(command -> builder.append(" ").append(command.names[0]));
         subCommandsString = builder.toString();
@@ -50,6 +57,28 @@ public class AdminCommand extends Command {
         public void on(Context context) {
             context.event.getJDA().shutdown();
             System.exit(0);
+        }
+    }
+
+    private class EvalCommand extends Command {
+        private final ScriptEngineFactory factory = new NashornScriptEngineFactory();
+
+        private EvalCommand() {
+            super("eval", "js");
+        }
+
+        @Override
+        public void on(Context context) {
+            ScriptEngine engine = factory.getScriptEngine();
+            engine.put("event", context.event);
+            engine.put("args", context.args);
+            try {
+                Object result = engine.eval(String.join(" ", context.args));
+                context.reply(result.toString());
+            } catch (ScriptException e) {
+                e.printStackTrace();
+                context.reply(e.getMessage());
+            }
         }
     }
 }
