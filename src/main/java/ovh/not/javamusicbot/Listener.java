@@ -22,7 +22,9 @@ class Listener extends ListenerAdapter {
         if (author.isBot() || author.getId().equalsIgnoreCase(event.getJDA().getSelfUser().getId())) {
             return;
         }
-        Matcher matcher = commandPattern.matcher(event.getMessage().getContent());
+        String content = event.getMessage().getContent();
+        System.out.println(content);
+        Matcher matcher = commandPattern.matcher(content.replace("\r", " ").replace("\n", " "));
         if (!matcher.find()) {
             return;
         }

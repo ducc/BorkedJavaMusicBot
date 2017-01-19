@@ -1,12 +1,11 @@
 package ovh.not.javamusicbot.command;
 
-import jdk.nashorn.api.scripting.NashornScriptEngineFactory;
 import ovh.not.javamusicbot.Command;
 import ovh.not.javamusicbot.CommandManager;
 import ovh.not.javamusicbot.Config;
 
 import javax.script.ScriptEngine;
-import javax.script.ScriptEngineFactory;
+import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -61,7 +60,7 @@ public class AdminCommand extends Command {
     }
 
     private class EvalCommand extends Command {
-        private final ScriptEngineFactory factory = new NashornScriptEngineFactory();
+        private final ScriptEngineManager engineManager = new ScriptEngineManager();
 
         private EvalCommand() {
             super("eval", "js");
@@ -69,12 +68,12 @@ public class AdminCommand extends Command {
 
         @Override
         public void on(Context context) {
-            ScriptEngine engine = factory.getScriptEngine();
+            ScriptEngine engine = engineManager.getEngineByName("nashorn");
             engine.put("event", context.event);
             engine.put("args", context.args);
             try {
                 Object result = engine.eval(String.join(" ", context.args));
-                context.reply(result.toString());
+                if (result != null) context.reply(result.toString());
             } catch (ScriptException e) {
                 e.printStackTrace();
                 context.reply(e.getMessage());
