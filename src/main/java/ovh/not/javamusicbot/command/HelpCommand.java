@@ -1,8 +1,8 @@
 package ovh.not.javamusicbot.command;
 
 import ovh.not.javamusicbot.Command;
+import ovh.not.javamusicbot.CommandDescriptions;
 import ovh.not.javamusicbot.CommandManager;
-import ovh.not.javamusicbot.Config;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,10 +12,10 @@ public class HelpCommand extends Command {
     private final CommandManager commandManager;
     private final Map<String, String> commandDescriptions;
 
-    public HelpCommand(CommandManager commandManager, Config config) {
+    public HelpCommand(CommandManager commandManager, CommandDescriptions descriptions) {
         super("help", "commands", "h");
         this.commandManager = commandManager;
-        this.commandDescriptions = config.commands;
+        this.commandDescriptions = descriptions.commands;
     }
 
     @Override

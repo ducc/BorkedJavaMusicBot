@@ -8,7 +8,7 @@ public class NowPlayingCommand extends Command {
     private static final String NOW_PLAYING_FORMAT = "Currently playing **%s** by **%s** `[%s/%s]`";
 
     public NowPlayingCommand() {
-        super("nowplaying", "current", "now");
+        super("nowplaying", "current", "now", "np");
     }
 
     @Override
