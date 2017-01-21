@@ -33,7 +33,7 @@ public class DiscordFMCommand extends Command {
         super("discordfm", "dfm");
         this.commandManager = commandManager;
         this.playerManager = playerManager;
-        StringBuilder builder = new StringBuilder("Uses a song playlist from http://discord.fm!\nUsage: `!!!dfm <library>`" +
+        StringBuilder builder = new StringBuilder("Uses a song playlist from http://discord.fm\nUsage: `!!!dfm <library>`" +
                 "\n\n**Available libraries:**\n");
         Library[] values = Library.values();
         for (int i = 0; i < values.length; i++) {
