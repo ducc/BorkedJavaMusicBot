@@ -1,5 +1,6 @@
 package ovh.not.javamusicbot;
 
+import com.google.gson.Gson;
 import com.moandjiezana.toml.Toml;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
@@ -12,6 +13,8 @@ import java.io.File;
 
 public final class MusicBot {
     private static final String CONFIG_PATH = "config.toml";
+    public static final String USER_AGENT = "dabBot (https://github.com/sponges/JavaMusicBot)";
+    public static final Gson GSON = new Gson();
 
     public static void main(String[] args) {
         Config config = new Toml().read(new File(CONFIG_PATH)).to(Config.class);

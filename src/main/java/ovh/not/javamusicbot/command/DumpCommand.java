@@ -1,6 +1,5 @@
 package ovh.not.javamusicbot.command;
 
-import com.google.gson.Gson;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
@@ -13,8 +12,9 @@ import ovh.not.javamusicbot.GuildMusicManager;
 import java.util.ArrayList;
 import java.util.List;
 
+import static ovh.not.javamusicbot.MusicBot.GSON;
+
 public class DumpCommand extends Command {
-    private static final Gson GSON = new Gson();
     private static final String HASTEBIN_URL = "https://hastebin.com/documents";
 
     public DumpCommand() {

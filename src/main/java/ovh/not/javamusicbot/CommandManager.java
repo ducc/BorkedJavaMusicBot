@@ -20,6 +20,7 @@ public class CommandManager {
         CommandManager.register(commands,
                 new AdminCommand(config),
                 new ChooseCommand(this),
+                new DiscordFMCommand(this, playerManager),
                 new DumpCommand(),
                 new HelpCommand(this, config),
                 new JumpCommand(),
