@@ -62,7 +62,6 @@ public class JumpCommand extends Command {
         time += Duration.ofMinutes(minutes).toMillis();
         time += Duration.ofSeconds(seconds).toMillis();
         musicManager.player.getPlayingTrack().setPosition(time);
-        context.reply(String.format("Jumped to `%s`",
-                formatDuration(musicManager.player.getPlayingTrack().getPosition())));
+        context.reply("Jumped to the specified position. Use `!!!nowplaying` to see the current song & position.");
     }
 }

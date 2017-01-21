@@ -1,39 +1,44 @@
 package ovh.not.javamusicbot.command;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
+import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import net.dv8tion.jda.core.entities.VoiceChannel;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import ovh.not.javamusicbot.*;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-
-import static ovh.not.javamusicbot.MusicBot.GSON;
-
+@SuppressWarnings("ConstantConditions")
 public class DiscordFMCommand extends Command {
-    private static final String DFM_LIBRARY_URL = "http://temp.discord.fm/libraries/%s/json";
+    private static final String DFM_BASE_URL = "http://temp.discord.fm";
+    private static final String DFM_LIBRARIES_URL = DFM_BASE_URL + "/libraries/json";
+    private static final String DFM_LIBRARY_URL = DFM_BASE_URL + "/libraries/%s/json";
 
     private final CommandManager commandManager;
     private final AudioPlayerManager playerManager;
+    private final Library[] libraries;
     private final String usageResponse;
 
     public DiscordFMCommand(CommandManager commandManager, AudioPlayerManager playerManager) {
         super("discordfm", "dfm");
         this.commandManager = commandManager;
         this.playerManager = playerManager;
+        JSONArray array = null;
+        try {
+            array = Unirest.get(DFM_LIBRARIES_URL).header("User-Agent", MusicBot.USER_AGENT).asJson().getBody().getArray();
+        } catch (UnirestException e) {
+            e.printStackTrace();
+        }
+        this.libraries = new Library[array.length()];
+        for (int i = 0; i < array.length(); i++) {
+            JSONObject object = array.getJSONObject(i);
+            libraries[i] = new Library(object);
+        }
         StringBuilder builder = new StringBuilder("Uses a song playlist from http://discord.fm\nUsage: `!!!dfm <library>`" +
                 "\n\n**Available libraries:**\n");
-        Library[] values = Library.values();
-        for (int i = 0; i < values.length; i++) {
-            builder.append(values[i].name().toLowerCase().replace('_', ' '));
-            if (i != values.length - 1) {
+        for (int i = 0; i < libraries.length; i++) {
+            builder.append(libraries[i].name);
+            if (i != libraries.length - 1) {
                 builder.append(", ");
             }
         }
@@ -53,17 +58,21 @@ public class DiscordFMCommand extends Command {
         }
         GuildMusicManager musicManager = GuildMusicManager.getOrCreate(context.event.getGuild(),
                 context.event.getTextChannel(), playerManager);
-        String libraryName = String.join(" ", context.args).toUpperCase().replace(' ', '_');
-        Library library;
-        try {
-            library = Library.valueOf(libraryName);
-        } catch (IllegalArgumentException e) {
-            context.reply("Invalid library! See `!!!dfm` for usage & libraries.");
+        String libraryName = String.join(" ", context.args);
+        Library library = null;
+        for (Library lib : libraries) {
+            if (lib.name.equalsIgnoreCase(libraryName)) {
+                library = lib;
+                break;
+            }
+        }
+        if (library == null) {
+            context.reply("Invalid library! Use `!!!dfm` to see usage & libraries.");
             return;
         }
-        List<String> songs;
+        String[] songs;
         try {
-            songs = library.get();
+            songs = library.songs();
         } catch (UnirestException e) {
             e.printStackTrace();
             context.reply("An error occurred!");
@@ -78,50 +87,29 @@ public class DiscordFMCommand extends Command {
         musicManager.player.stopTrack();
         LoadResultHandler handler = new LoadResultHandler(commandManager, musicManager, context);
         handler.verbose = false;
-        songs.forEach(song -> playerManager.loadItem(song, handler));
+        for (String song : songs) {
+            playerManager.loadItem(song, handler);
+        }
         if (!musicManager.open) {
             musicManager.open(channel);
         }
     }
 
-    private enum Library {
-        ELECTRO_HUB, CHILL_CORNER, KOREAN_MADNESS, JAPANESE_LOUNGE, CLASSICAL, RETRO_RENEGADE, METAL_MIX, HIP_HOP,
-        ELECTRO_SWING, ROCK_N_ROLL, COFFEE_HOUSE_JAZZ;
+    private class Library {
+        private final String id, name;
 
-        private final String urlName;
-
-        Library() {
-            this.urlName = this.name().toLowerCase().replace("_", "-");
+        private Library(JSONObject json) {
+            this.id = json.getString("id");
+            this.name = json.getString("name");
         }
 
-        private List<String> get() throws UnirestException {
-            String url = String.format(DFM_LIBRARY_URL, urlName);
-            HttpURLConnection connection;
-            try {
-                connection = (HttpURLConnection) new URL(url).openConnection();
-                connection.addRequestProperty("User-Agent", MusicBot.USER_AGENT);
-                connection.setRequestMethod("GET");
-            } catch (IOException e) {
-                e.printStackTrace();
-                return null;
+        private String[] songs() throws UnirestException {
+            String url = String.format(DFM_LIBRARY_URL, id);
+            JSONArray array = Unirest.get(url).header("User-Agent", MusicBot.USER_AGENT).asJson().getBody().getArray();
+            String[] songs = new String[array.length()];
+            for (int i = 0; i < array.length(); i++) {
+                songs[i] = array.getJSONObject(i).getString("identifier");
             }
-            List<String> songs = new ArrayList<>();
-            JsonArray json;
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
-                StringBuilder builder = new StringBuilder();
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    builder.append(line);
-                }
-                json = GSON.fromJson(builder.toString(), JsonArray.class);
-            } catch (IOException e) {
-                e.printStackTrace();
-                return null;
-            }
-            json.forEach(element -> {
-                JsonObject object = element.getAsJsonObject();
-                songs.add(object.get("identifier").getAsString());
-            });
             return songs;
         }
     }

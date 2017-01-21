@@ -40,7 +40,7 @@ public class DumpCommand extends Command {
         Unirest.post(HASTEBIN_URL).body(json).asJsonAsync(new Callback<JsonNode>() {
             @Override
             public void completed(HttpResponse<JsonNode> httpResponse) {
-                context.reply(String.format("Dumb created! https://hastebin.com/%s.json", httpResponse.getBody()
+                context.reply(String.format("Dump created! https://hastebin.com/%s.json", httpResponse.getBody()
                         .getObject().getString("key")));
             }
 
