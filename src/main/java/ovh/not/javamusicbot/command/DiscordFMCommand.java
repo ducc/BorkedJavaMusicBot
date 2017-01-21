@@ -96,7 +96,9 @@ public class DiscordFMCommand extends Command {
         LoadResultHandler handler = new LoadResultHandler(commandManager, musicManager, context);
         handler.verbose = false;
         songs.forEach(song -> playerManager.loadItem(song, handler));
-
+        if (!musicManager.open) {
+            musicManager.open(channel);
+        }
     }
 
     private enum Library {
