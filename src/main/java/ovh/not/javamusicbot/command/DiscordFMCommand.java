@@ -7,23 +7,18 @@ import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import ovh.not.javamusicbot.*;
 
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.URL;
-import java.security.SecureRandom;
-import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
 
 import static ovh.not.javamusicbot.MusicBot.GSON;
 
 public class DiscordFMCommand extends Command {
-    private static final String DFM_LIBRARY_URL = "https://temp.discord.fm/libraries/%s/json";
+    private static final String DFM_LIBRARY_URL = "http://temp.discord.fm/libraries/%s/json";
 
     private final CommandManager commandManager;
     private final AudioPlayerManager playerManager;
@@ -43,18 +38,6 @@ public class DiscordFMCommand extends Command {
             }
         }
         this.usageResponse = builder.toString();
-        // making ourself venerable to mitm attacks
-        TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager(){
-            public X509Certificate[] getAcceptedIssuers(){return null;}
-            public void checkClientTrusted(X509Certificate[] certs, String authType){}
-            public void checkServerTrusted(X509Certificate[] certs, String authType){}
-        }};
-        try {
-            SSLContext sc = SSLContext.getInstance("TLS");
-            sc.init(null, trustAllCerts, new SecureRandom());
-            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-        } catch (Exception ignored) {
-        }
     }
 
     @Override
@@ -103,7 +86,7 @@ public class DiscordFMCommand extends Command {
 
     private enum Library {
         ELECTRO_HUB, CHILL_CORNER, KOREAN_MADNESS, JAPANESE_LOUNGE, CLASSICAL, RETRO_RENEGADE, METAL_MIX, HIP_HOP,
-        ROCK_N_ROLL, COFFEE_HOUSE_JAZZ;
+        ELECTRO_SWING, ROCK_N_ROLL, COFFEE_HOUSE_JAZZ;
 
         private final String urlName;
 
@@ -113,9 +96,9 @@ public class DiscordFMCommand extends Command {
 
         private List<String> get() throws UnirestException {
             String url = String.format(DFM_LIBRARY_URL, urlName);
-            HttpsURLConnection connection;
+            HttpURLConnection connection;
             try {
-                connection = (HttpsURLConnection) new URL(url).openConnection();
+                connection = (HttpURLConnection) new URL(url).openConnection();
                 connection.addRequestProperty("User-Agent", MusicBot.USER_AGENT);
                 connection.setRequestMethod("GET");
             } catch (IOException e) {
