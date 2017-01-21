@@ -23,7 +23,6 @@ class Listener extends ListenerAdapter {
             return;
         }
         String content = event.getMessage().getContent();
-        System.out.println(content);
         Matcher matcher = commandPattern.matcher(content.replace("\r", " ").replace("\n", " "));
         if (!matcher.find()) {
             return;
