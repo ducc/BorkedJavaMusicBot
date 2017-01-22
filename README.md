@@ -14,7 +14,6 @@ The source code for dabBot
         game   = "Current playing game"
         invite = "Bot invite link"
         about  = "My about text"
-        
     Sample pattern: `^\\?([a-zA-Z]+)(?:\\s+)?(.*)?` - for `?` as the prefix.
 3. Run the bot
 
@@ -53,4 +52,5 @@ full license text.
 
 License summary (not legal advise, read the full license)
 ![](https://im.not.ovh/FfaTma29YrybOca.png)
+
 Source: [tldrlegal.com](https://tldrlegal.com/license/creative-commons-attribution-noncommercial-(cc-nc)#summary)
