@@ -1,17 +1,24 @@
 package ovh.not.javamusicbot;
 
+import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
+import org.json.JSONObject;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 class Listener extends ListenerAdapter {
+    private static final String CARBON_DATA_URL = "https://www.carbonitex.net/discord/data/botdata.php";
+    private final Config config;
     private final CommandManager commandManager;
     private final Pattern commandPattern;
 
     Listener(Config config, CommandManager commandManager) {
+        this.config = config;
         this.commandManager = commandManager;
         this.commandPattern = Pattern.compile(config.regex);
     }
@@ -42,5 +49,23 @@ class Listener extends ListenerAdapter {
             context.args = matches;
         }
         command.on(context);
+    }
+
+    @Override
+    public void onGuildJoin(GuildJoinEvent event) {
+        System.out.println("Joined guild: " + event.getGuild().getName());
+        if (config.dev || config.carbon == null || config.carbon.length() == 0) {
+            return;
+        }
+        int guilds = event.getJDA().getGuilds().size();
+        try {
+            Unirest.post(CARBON_DATA_URL)
+                    .header("Content-Type", "application/json")
+                    .header("User-Agent", MusicBot.USER_AGENT)
+                    .body(new JSONObject().put("key", config.carbon).put("servercount", guilds)).asString();
+            System.out.println("sent carbon");
+        } catch (UnirestException e) {
+            e.printStackTrace();
+        }
     }
 }
