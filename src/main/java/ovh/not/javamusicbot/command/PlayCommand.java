@@ -21,7 +21,8 @@ public class PlayCommand extends Command {
     public void on(Context context) {
         if (context.args.length == 0) {
             context.reply("Usage: `!!!p <link>` - plays a song\n" +
-                    "To search youtube, use `!!!search: <your search term>`");
+                    "To search youtube, use `!!!search: <your search term>`\n" +
+                    "To add as first in queue, use `!!!p <link> -first`");
             return;
         }
         VoiceChannel channel = context.event.getMember().getVoiceState().getChannel();
@@ -31,8 +32,14 @@ public class PlayCommand extends Command {
         }
         GuildMusicManager musicManager = GuildMusicManager.getOrCreate(context.event.getGuild(),
                 context.event.getTextChannel(), playerManager);
-        playerManager.loadItem(String.join(" ", context.args), new LoadResultHandler(commandManager, musicManager,
-                context));
+        LoadResultHandler handler = new LoadResultHandler(commandManager, musicManager, context);
+        String songName = String.join(" ", context.args);
+        int index = songName.indexOf(" -first");
+        if (index != -1) {
+            handler.setFirstInQueue = true;
+            songName = songName.substring(0, index);
+        }
+        playerManager.loadItem(songName, handler);
         if (!musicManager.open) {
             musicManager.open(channel);
         }

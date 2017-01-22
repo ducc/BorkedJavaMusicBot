@@ -12,6 +12,7 @@ public class LoadResultHandler implements AudioLoadResultHandler {
     private final GuildMusicManager musicManager;
     private final Command.Context context;
     public boolean verbose = true;
+    public boolean setFirstInQueue = false;
 
     public LoadResultHandler(CommandManager commandManager, GuildMusicManager musicManager, Command.Context context) {
         this.commandManager = commandManager;
@@ -22,7 +23,7 @@ public class LoadResultHandler implements AudioLoadResultHandler {
     @Override
     public void trackLoaded(AudioTrack audioTrack) {
         boolean playing = musicManager.player.getPlayingTrack() != null;
-        musicManager.scheduler.queue(audioTrack);
+        musicManager.scheduler.queue(audioTrack, setFirstInQueue);
         if (playing && verbose) {
             context.reply(String.format("Queued **%s** `[%s]`", audioTrack.getInfo().title,
                     formatDuration(audioTrack.getDuration())));
