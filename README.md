@@ -3,28 +3,26 @@ The source code for dabBot
 
 ## Setup
 1. Compile using maven
-```
-mvn clean package
-```
 
-
+        ```
+        mvn clean package
+        ```
 2. Create `config.toml`
 
-```toml
-token  = "Bot application token"
-owner  = "Owner discord user id"
-regex  = "Command parser regex pattern"
-game   = "Current playing game"
-invite = "Bot invite link"
-about  = "My about text"
-```
-Sample pattern: `^\\?([a-zA-Z]+)(?:\\s+)?(.*)?` - for `?` as the prefix.
-
-
+        ```toml
+        token  = "Bot application token"
+        owner  = "Owner discord user id"
+        regex  = "Command parser regex pattern"
+        game   = "Current playing game"
+        invite = "Bot invite link"
+        about  = "My about text"
+        ```
+        Sample pattern: `^\\?([a-zA-Z]+)(?:\\s+)?(.*)?` - for `?` as the prefix.
 3. Run the bot
-```
-java -jar target/JavaMusicBot.jar
-```
+
+        ```
+        java -jar target/JavaMusicBot.jar
+        ```
 
 ## Dependencies
 Dependencies are managed by Maven. See the maven [pom.xml](https://github.com/sponges/JavaMusicBot/blob/master/pom.xml) file.
