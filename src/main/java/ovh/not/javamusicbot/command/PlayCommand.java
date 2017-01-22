@@ -7,6 +7,8 @@ import ovh.not.javamusicbot.CommandManager;
 import ovh.not.javamusicbot.GuildMusicManager;
 import ovh.not.javamusicbot.LoadResultHandler;
 
+import java.util.Set;
+
 public class PlayCommand extends Command {
     private final CommandManager commandManager;
     private final AudioPlayerManager playerManager;
@@ -33,13 +35,11 @@ public class PlayCommand extends Command {
         GuildMusicManager musicManager = GuildMusicManager.getOrCreate(context.event.getGuild(),
                 context.event.getTextChannel(), playerManager);
         LoadResultHandler handler = new LoadResultHandler(commandManager, musicManager, context);
-        String songName = String.join(" ", context.args);
-        int index = songName.indexOf(" -first");
-        if (index != -1) {
+        Set<String> flags = context.parseFlags();
+        if (flags.contains("first") || flags.contains("f")) {
             handler.setFirstInQueue = true;
-            songName = songName.substring(0, index);
         }
-        playerManager.loadItem(songName, handler);
+        playerManager.loadItem(String.join(" ", context.args), handler);
         if (!musicManager.open) {
             musicManager.open(channel);
         }
