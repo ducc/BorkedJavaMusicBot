@@ -13,15 +13,15 @@ import java.io.File;
 
 public final class MusicBot {
     private static final String CONFIG_PATH = "config.toml";
-    private static final String COMMAND_DESCRIPTIONS_PATH = "commands.toml";
+    private static final String CONSTANTS_PATH = "constants.toml";
     public static final String USER_AGENT = "dabBot (https://github.com/sponges/JavaMusicBot)";
     public static final Gson GSON = new Gson();
 
     public static void main(String[] args) {
         Config config = new Toml().read(new File(CONFIG_PATH)).to(Config.class);
-        CommandDescriptions descriptions = new Toml().read(new File(COMMAND_DESCRIPTIONS_PATH))
-                .to(CommandDescriptions.class);
-        CommandManager commandManager = new CommandManager(config, descriptions);
+        Constants constants = new Toml().read(new File(CONSTANTS_PATH))
+                .to(Constants.class);
+        CommandManager commandManager = new CommandManager(config, constants);
         JDA jda;
         try {
             jda = new JDABuilder(AccountType.BOT)

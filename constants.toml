@@ -1,4 +1,4 @@
-[commands]
+[commandDescriptions]
   about      = "Information about the bot"
   choose     = "Picks from a selection menu"
   discordfm  = "Plays music from discord.fm playlists"
@@ -19,3 +19,14 @@
   skip       = "Plays the next song in the queue"
   stop       = "Stops playing and leaves the voice channel"
   volume     = "Changes the music volume"
+
+[radioStations]
+  "KissFM"         = "http://icy-e-ba-09-boh.sharp-stream.com/kissnational.mp3"
+  "CapitalFM"      = "http://media-ice.musicradio.com/CapitalSouthWalesMP3"
+  "Heart"          = "http://media-ice.musicradio.com/HeartSouthWalesMP3"
+  "Absolute Radio" = "http://icy-e-bab-09-boh.sharp-stream.com/absoluteradio.mp3"
+  "Bro Radio"      = "http://csmedia.serverroom.us:8720/;stream.mp3"
+  "ClassicalFM"    = "http://media-ice.musicradio.com/ClassicFMMP3"
+  "Magic"          = "http://icy-e-bz-02-gos.sharp-stream.com/magicnationallow.mp3"
+  "Smooth Radio"   = "http://media-ice.musicradio.com/SmoothSouthWalesMP3"
+  "The Breeze"     = "http://stream5.radiomonitor.com/Breeze-Bristol-128"

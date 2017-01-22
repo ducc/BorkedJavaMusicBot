@@ -14,7 +14,7 @@ public class CommandManager {
     public final Map<String, Command> commands = new HashMap<>();
     public final Map<Member, Selection<AudioTrack, String>> selectors = new HashMap<>();
 
-    CommandManager(Config config, CommandDescriptions descriptions) {
+    CommandManager(Config config, Constants constants) {
         AudioPlayerManager playerManager = new DefaultAudioPlayerManager();
         AudioSourceManagers.registerRemoteSources(playerManager);
         CommandManager.register(commands,
@@ -23,7 +23,7 @@ public class CommandManager {
                 new ChooseCommand(this),
                 new DiscordFMCommand(this, playerManager),
                 new DumpCommand(),
-                new HelpCommand(this, descriptions),
+                new HelpCommand(this, constants),
                 new InviteCommand(config),
                 new JumpCommand(),
                 new MoveCommand(),
@@ -31,6 +31,7 @@ public class CommandManager {
                 new PauseCommand(),
                 new PlayCommand(this, playerManager),
                 new QueueCommand(),
+                new RadioCommand(this, playerManager, constants),
                 new ReorderCommand(),
                 new RepeatCommand(),
                 new RestartCommand(),

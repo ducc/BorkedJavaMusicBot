@@ -27,7 +27,7 @@ class Listener extends ListenerAdapter {
         if (!matcher.find()) {
             return;
         }
-        String name = matcher.group(1);
+        String name = matcher.group(1).toLowerCase();
         Command command = commandManager.getCommand(name);
         if (command == null) {
             return;
