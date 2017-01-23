@@ -13,6 +13,7 @@ import java.util.regex.Pattern;
 
 class Listener extends ListenerAdapter {
     private static final String CARBON_DATA_URL = "https://www.carbonitex.net/discord/data/botdata.php";
+    private static final String DBOTS_STATS_URL = "https://bots.discord.pw/api/bots/%s/stats";
     private final Config config;
     private final CommandManager commandManager;
     private final Pattern commandPattern;
@@ -53,17 +54,25 @@ class Listener extends ListenerAdapter {
 
     @Override
     public void onGuildJoin(GuildJoinEvent event) {
-        System.out.println("Joined guild: " + event.getGuild().getName());
-        if (config.dev || config.carbon == null || config.carbon.length() == 0) {
+        int guilds = event.getJDA().getGuilds().size();
+        System.out.println(String.format("Joined guild: %s - #%d", event.getGuild().getName(), guilds));
+        if (config.dev) {
             return;
         }
-        int guilds = event.getJDA().getGuilds().size();
         try {
-            Unirest.post(CARBON_DATA_URL)
-                    .header("Content-Type", "application/json")
-                    .header("User-Agent", MusicBot.USER_AGENT)
-                    .body(new JSONObject().put("key", config.carbon).put("servercount", guilds)).asString();
-            System.out.println("sent carbon");
+            if (config.carbon != null && config.carbon.length() > 0) {
+                Unirest.post(CARBON_DATA_URL)
+                        .header("Content-Type", "application/json")
+                        .header("User-Agent", MusicBot.USER_AGENT)
+                        .body(new JSONObject().put("key", config.carbon).put("servercount", guilds)).asString();
+            }
+            if (config.dbots != null && config.dbots.length() > 0) {
+                Unirest.post(String.format(DBOTS_STATS_URL, event.getJDA().getSelfUser().getId()))
+                        .header("Content-Type", "application/json")
+                        .header("User-Agent", MusicBot.USER_AGENT)
+                        .header("Authorization", config.dbots)
+                        .body(new JSONObject().put("server_count", guilds)).asString();
+            }
         } catch (UnirestException e) {
             e.printStackTrace();
         }

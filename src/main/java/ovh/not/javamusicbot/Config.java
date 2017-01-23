@@ -9,4 +9,5 @@ public class Config {
     public String invite;
     public String about;
     String carbon;
+    String dbots;
 }
