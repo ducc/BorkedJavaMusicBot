@@ -2,6 +2,7 @@ package ovh.not.javamusicbot;
 
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
@@ -31,6 +32,7 @@ class Listener extends ListenerAdapter {
             return;
         }
         String content = event.getMessage().getContent();
+        System.out.println(String.format("[%s] %s: %s", event.getGuild().getName(), author.getName(), content));
         Matcher matcher = commandPattern.matcher(content.replace("\r", " ").replace("\n", " "));
         if (!matcher.find()) {
             return;
@@ -55,6 +57,9 @@ class Listener extends ListenerAdapter {
     @Override
     public void onGuildJoin(GuildJoinEvent event) {
         int guilds = event.getJDA().getGuilds().size();
+        JDA.ShardInfo shardInfo = event.getJDA().getShardInfo();
+        int shardCount = shardInfo.getShardTotal();
+        int shardId = shardInfo.getShardId();
         System.out.println(String.format("Joined guild: %s - #%d", event.getGuild().getName(), guilds));
         if (config.dev) {
             return;
@@ -64,14 +69,24 @@ class Listener extends ListenerAdapter {
                 Unirest.post(CARBON_DATA_URL)
                         .header("Content-Type", "application/json")
                         .header("User-Agent", MusicBot.USER_AGENT)
-                        .body(new JSONObject().put("key", config.carbon).put("servercount", guilds)).asString();
+                        .body(new JSONObject()
+                                .put("key", config.carbon)
+                                .put("servercount", guilds)
+                                .put("shards", new JSONObject()
+                                        .put("shards", shardCount)
+                                        .put("shardcount", shardCount)))
+                        .asString();
             }
             if (config.dbots != null && config.dbots.length() > 0) {
                 Unirest.post(String.format(DBOTS_STATS_URL, event.getJDA().getSelfUser().getId()))
                         .header("Content-Type", "application/json")
                         .header("User-Agent", MusicBot.USER_AGENT)
                         .header("Authorization", config.dbots)
-                        .body(new JSONObject().put("server_count", guilds)).asString();
+                        .body(new JSONObject()
+                                .put("server_count", guilds)
+                                .put("shard_count", shardCount)
+                                .put("shard_id", shardId))
+                        .asString();
             }
         } catch (UnirestException e) {
             e.printStackTrace();

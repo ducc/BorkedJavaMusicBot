@@ -60,13 +60,19 @@ public class LoadResultHandler implements AudioLoadResultHandler {
 
     @Override
     public void noMatches() {
-        if (verbose) context.reply("No song matches found! Usage: `!!!p <link>`\n" +
-                "To play music from youtube, use `!!!p ytsearch: <your search term>`");
+        if (verbose) {
+            context.reply("No song matches found! Usage: `!!!p <link>`\n" +
+                    "To play music from youtube, use `!!!p ytsearch: <your search term>`");
+        }
     }
 
     @Override
     public void loadFailed(FriendlyException e) {
-        e.printStackTrace();
-        if (verbose) context.reply("An error occurred!");
+        if (verbose) {
+            context.reply("An error occurred!");
+            e.printStackTrace();
+        } else {
+            System.out.println(e.getMessage());
+        }
     }
 }
