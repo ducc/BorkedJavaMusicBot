@@ -52,14 +52,14 @@ public class QueueCommand extends Command {
         } else {
             pageable.setPage(pageable.getMinPageRange());
         }
-        builder.append(String.format(SONG_QUEUE_LINE, pageable.getPage(), pageable.getMaxPageRange()));
+        builder.append(String.format(SONG_QUEUE_LINE, pageable.getPage(), pageable.getMaxPages()));
         int index = 1;
         for (AudioTrack track : pageable.getListForPage()) {
             builder.append(String.format(QUEUE_LINE, ((pageable.getPage() - 1) * pageable.getPageSize()) + index, track.getInfo().title, track.getInfo().author,
                     formatDuration(track.getDuration())));
             index++;
         }
-        if (pageable.getPage() < pageable.getMaxPageRange()) {
+        if (pageable.getPage() < pageable.getMaxPages()) {
             builder.append("\n\n__To see the next page:__ `!!!queue ").append(pageable.getPage() + 1).append("`");
         }
         context.reply(builder.toString());
