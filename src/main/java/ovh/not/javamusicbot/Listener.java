@@ -72,9 +72,8 @@ class Listener extends ListenerAdapter {
                         .body(new JSONObject()
                                 .put("key", config.carbon)
                                 .put("servercount", guilds)
-                                .put("shards", new JSONObject()
-                                        .put("shards", shardCount)
-                                        .put("shardcount", shardCount)))
+                                .put("shardcount", shardCount)
+                                .put("shardid", shardId))
                         .asString();
             }
             if (config.dbots != null && config.dbots.length() > 0) {
