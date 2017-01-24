@@ -35,7 +35,7 @@ public class CommandManager {
                 new ReorderCommand(),
                 new RepeatCommand(),
                 new RestartCommand(),
-                new SearchCommand(this),
+                new SearchCommand(),
                 new ShuffleCommand(),
                 new SkipCommand(),
                 new StopCommand(),

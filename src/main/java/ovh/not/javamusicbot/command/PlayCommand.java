@@ -34,7 +34,8 @@ public class PlayCommand extends Command {
         }
         GuildMusicManager musicManager = GuildMusicManager.getOrCreate(context.event.getGuild(),
                 context.event.getTextChannel(), playerManager);
-        LoadResultHandler handler = new LoadResultHandler(commandManager, musicManager, context);
+        LoadResultHandler handler = new LoadResultHandler(commandManager, musicManager, playerManager, context);
+        handler.allowSearch = true;
         Set<String> flags = context.parseFlags();
         if (flags.contains("first") || flags.contains("f")) {
             handler.setFirstInQueue = true;

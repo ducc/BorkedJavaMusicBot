@@ -85,7 +85,7 @@ public class DiscordFMCommand extends Command {
         musicManager.scheduler.queue.clear();
         musicManager.scheduler.repeat = false;
         musicManager.player.stopTrack();
-        LoadResultHandler handler = new LoadResultHandler(commandManager, musicManager, context);
+        LoadResultHandler handler = new LoadResultHandler(commandManager, musicManager, playerManager, context);
         handler.verbose = false;
         for (String song : songs) {
             playerManager.loadItem(song, handler);

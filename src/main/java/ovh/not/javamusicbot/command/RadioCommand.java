@@ -57,7 +57,7 @@ public class RadioCommand extends Command {
         }
         GuildMusicManager musicManager = GuildMusicManager.getOrCreate(context.event.getGuild(),
                 context.event.getTextChannel(), playerManager);
-        LoadResultHandler handler = new LoadResultHandler(commandManager, musicManager, context);
+        LoadResultHandler handler = new LoadResultHandler(commandManager, musicManager, playerManager, context);
         musicManager.scheduler.queue.clear();
         musicManager.scheduler.repeat = false;
         musicManager.player.stopTrack();

@@ -1,6 +1,7 @@
 package ovh.not.javamusicbot;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
+import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
@@ -10,13 +11,17 @@ import static ovh.not.javamusicbot.CommandUtils.formatDuration;
 public class LoadResultHandler implements AudioLoadResultHandler {
     private final CommandManager commandManager;
     private final GuildMusicManager musicManager;
+    private final AudioPlayerManager playerManager;
     private final Command.Context context;
     public boolean verbose = true;
+    private boolean isSearch = false;
+    public boolean allowSearch = false;
     public boolean setFirstInQueue = false;
 
-    public LoadResultHandler(CommandManager commandManager, GuildMusicManager musicManager, Command.Context context) {
+    public LoadResultHandler(CommandManager commandManager, GuildMusicManager musicManager, AudioPlayerManager playerManager, Command.Context context) {
         this.commandManager = commandManager;
         this.musicManager = musicManager;
+        this.playerManager = playerManager;
         this.context = context;
     }
 
@@ -61,8 +66,12 @@ public class LoadResultHandler implements AudioLoadResultHandler {
     @Override
     public void noMatches() {
         if (verbose) {
-            context.reply("No song matches found! Usage: `!!!p <link>`\n" +
-                    "To play music from youtube, use `!!!p ytsearch: <your search term>`");
+            if (isSearch) {
+                context.reply("No song matches found! Usage: `!!!p <link or youtube video title>`");
+            } else if (allowSearch) {
+                this.isSearch = true;
+                playerManager.loadItem("ytsearch: " + String.join(" ", context.args), this);
+            }
         }
     }
 

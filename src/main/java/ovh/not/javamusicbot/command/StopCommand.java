@@ -7,7 +7,7 @@ import ovh.not.javamusicbot.GuildMusicManager;
 
 public class StopCommand extends Command {
     public StopCommand() {
-        super("stop", "leave");
+        super("stop", "leave", "clear");
     }
 
     @Override
