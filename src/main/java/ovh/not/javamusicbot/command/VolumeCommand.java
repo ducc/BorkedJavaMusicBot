@@ -1,7 +1,6 @@
 package ovh.not.javamusicbot.command;
 
 import ovh.not.javamusicbot.Command;
-import ovh.not.javamusicbot.GuildMusicManager;
 
 public class VolumeCommand extends Command {
     public VolumeCommand() {
@@ -10,7 +9,9 @@ public class VolumeCommand extends Command {
 
     @Override
     public void on(Context context) {
-        GuildMusicManager musicManager = GuildMusicManager.get(context.event.getGuild());
+        context.reply("Changing song volume is known to cause performance issues. The command has been disabled "
+                + "until a solution is found.");
+        /*GuildMusicManager musicManager = GuildMusicManager.get(context.event.getGuild());
         if (musicManager == null || musicManager.player.getPlayingTrack() == null) {
             context.reply("No music is playing on this guild!");
             return;
@@ -25,6 +26,6 @@ public class VolumeCommand extends Command {
             context.reply(String.format("Set volume to **%d**", newVolume));
         } catch (NumberFormatException e) {
             context.reply("Invalid volume. Bounds: `10 - 100`");
-        }
+        }*/
     }
 }
