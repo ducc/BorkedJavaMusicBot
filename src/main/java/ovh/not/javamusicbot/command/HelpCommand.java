@@ -13,7 +13,7 @@ public class HelpCommand extends Command {
     private final Map<String, String> commandDescriptions;
 
     public HelpCommand(CommandManager commandManager, Constants constants) {
-        super("help", "commands", "h");
+        super("help", "commands", "h", "music");
         this.commandManager = commandManager;
         this.commandDescriptions = constants.commandDescriptions;
     }
