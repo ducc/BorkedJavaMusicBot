@@ -40,12 +40,12 @@ public class QueueCommand extends Command {
                 page = Integer.parseInt(context.args[0]);
             } catch (NumberFormatException e) {
                 context.reply(String.format("Invalid page! Must be an integer within the range %d - %d",
-                        pageable.getMinPageRange(), pageable.getMaxPageRange()));
+                        pageable.getMinPageRange(), pageable.getMaxPages()));
                 return;
             }
-            if (page < pageable.getMinPageRange() || page > pageable.getMaxPageRange()) {
+            if (page < pageable.getMinPageRange() || page > pageable.getMaxPages()) {
                 context.reply(String.format("Invalid page! Must be an integer within the range %d - %d",
-                        pageable.getMinPageRange(), pageable.getMaxPageRange()));
+                        pageable.getMinPageRange(), pageable.getMaxPages()));
                 return;
             }
             pageable.setPage(page);
