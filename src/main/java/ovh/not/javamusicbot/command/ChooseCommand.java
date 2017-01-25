@@ -34,21 +34,23 @@ public class ChooseCommand extends Command {
                 selection.callback.accept(false, null);
                 return;
         }
-        int selected;
-        try {
-            selected = Integer.parseInt(context.args[0]);
-        } catch (NumberFormatException e) {
-            context.reply(String.format("Invalid input `%s`. Must be an integer with the range 1 - %d. **To cancel selection**, "
-                    + "use `!!!cancel`.", context.args[0], selection.items.length));
-            return;
+        for (String arg : context.args) {
+            int selected;
+            try {
+                selected = Integer.parseInt(arg);
+            } catch (NumberFormatException e) {
+                context.reply(String.format("Invalid input `%s`. Must be an integer with the range 1 - %d. **To cancel selection**, "
+                        + "use `!!!cancel`.", arg, selection.items.length));
+                return;
+            }
+            if (selected < 1 || selected > selection.items.length) {
+                context.reply(String.format("Invalid input `%s`. Must be an integer with the range 1 - %d. **To cancel selection**, "
+                        + "use `!!!cancel`.", arg, selection.items.length));
+                return;
+            }
+            AudioTrack track = selection.items[selected - 1];
+            selection.callback.accept(true, track);
         }
-        if (selected < 1 || selected > selection.items.length) {
-            context.reply(String.format("Invalid input `%s`. Must be an integer with the range 1 - %d. **To cancel selection**, "
-                    + "use `!!!cancel`.", context.args[0], selection.items.length));
-            return;
-        }
-        AudioTrack track = selection.items[selected - 1];
         commandManager.selectors.remove(member);
-        selection.callback.accept(true, track);
     }
 }
