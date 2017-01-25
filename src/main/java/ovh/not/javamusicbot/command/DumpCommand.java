@@ -13,10 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static ovh.not.javamusicbot.MusicBot.GSON;
+import static ovh.not.javamusicbot.Utils.HASTEBIN_URL;
 
 public class DumpCommand extends Command {
-    private static final String HASTEBIN_URL = "https://hastebin.com/documents";
-
     public DumpCommand() {
         super("dump");
     }

@@ -1,5 +1,10 @@
 package ovh.not.javamusicbot.command;
 
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.JsonNode;
+import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.http.async.Callback;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import ovh.not.javamusicbot.Command;
 import ovh.not.javamusicbot.GuildMusicManager;
@@ -7,6 +12,9 @@ import ovh.not.javamusicbot.Pageable;
 
 import java.util.List;
 import java.util.Queue;
+
+import static ovh.not.javamusicbot.Utils.HASTEBIN_URL;
+import static ovh.not.javamusicbot.Utils.formatDuration;
 
 @SuppressWarnings("unchecked")
 public class QueueCommand extends Command {
@@ -30,38 +38,71 @@ public class QueueCommand extends Command {
         AudioTrack playing = musicManager.player.getPlayingTrack();
         Queue<AudioTrack> queue = musicManager.scheduler.queue;
         StringBuilder builder = new StringBuilder();
-        builder.append(String.format(CURRENT_LINE, playing.getInfo().title, playing.getInfo().author,
-                formatDuration(playing.getPosition()) + "/" + formatDuration(playing.getDuration())));
-        Pageable<AudioTrack> pageable = new Pageable<>((List<AudioTrack>) queue);
-        pageable.setPageSize(PAGE_SIZE);
-        if (context.args.length > 0) {
-            int page;
-            try {
-                page = Integer.parseInt(context.args[0]);
-            } catch (NumberFormatException e) {
-                context.reply(String.format("Invalid page! Must be an integer within the range %d - %d",
-                        pageable.getMinPageRange(), pageable.getMaxPages()));
-                return;
+        if (context.args.length > 0 && context.args[0].equalsIgnoreCase("all")) {
+            builder.append(String.format("Song queue for %s - %d songs.\nCurrent song: %s by %s [%s/%s]\n",
+                    context.event.getGuild().getName(), queue.size(), playing.getInfo().title,
+                    playing.getInfo().author, formatDuration(playing.getPosition()),
+                    formatDuration(playing.getDuration())));
+            List<AudioTrack> list = (List<AudioTrack>) queue;
+            for (int i = 0; i < list.size(); i++) {
+                AudioTrack track = list.get(i);
+                builder.append(String.format("\n%02d %s by %s [%s/%s]", i + 1, track.getInfo().title,
+                        track.getInfo().author, formatDuration(track.getPosition()),
+                        formatDuration(track.getDuration())));
             }
-            if (page < pageable.getMinPageRange() || page > pageable.getMaxPages()) {
-                context.reply(String.format("Invalid page! Must be an integer within the range %d - %d",
-                        pageable.getMinPageRange(), pageable.getMaxPages()));
-                return;
-            }
-            pageable.setPage(page);
+            Unirest.post(HASTEBIN_URL).body(builder.toString()).asJsonAsync(new Callback<JsonNode>() {
+                @Override
+                public void completed(HttpResponse<JsonNode> httpResponse) {
+                    context.reply(String.format("Full song queue: https://hastebin.com/%s.txt", httpResponse.getBody()
+                            .getObject().getString("key")));
+                }
+
+                @Override
+                public void failed(UnirestException e) {
+                    e.printStackTrace();
+                    context.reply("An error occured!");
+                }
+
+                @Override
+                public void cancelled() {
+                    context.reply("Operation cancelled.");
+                }
+            });
         } else {
-            pageable.setPage(pageable.getMinPageRange());
+            builder.append(String.format(CURRENT_LINE, playing.getInfo().title, playing.getInfo().author,
+                    formatDuration(playing.getPosition()) + "/" + formatDuration(playing.getDuration())));
+            Pageable<AudioTrack> pageable = new Pageable<>((List<AudioTrack>) queue);
+            pageable.setPageSize(PAGE_SIZE);
+            if (context.args.length > 0) {
+                int page;
+                try {
+                    page = Integer.parseInt(context.args[0]);
+                } catch (NumberFormatException e) {
+                    context.reply(String.format("Invalid page! Must be an integer within the range %d - %d",
+                            pageable.getMinPageRange(), pageable.getMaxPages()));
+                    return;
+                }
+                if (page < pageable.getMinPageRange() || page > pageable.getMaxPages()) {
+                    context.reply(String.format("Invalid page! Must be an integer within the range %d - %d",
+                            pageable.getMinPageRange(), pageable.getMaxPages()));
+                    return;
+                }
+                pageable.setPage(page);
+            } else {
+                pageable.setPage(pageable.getMinPageRange());
+            }
+            builder.append(String.format(SONG_QUEUE_LINE, pageable.getPage(), pageable.getMaxPages()));
+            int index = 1;
+            for (AudioTrack track : pageable.getListForPage()) {
+                builder.append(String.format(QUEUE_LINE, ((pageable.getPage() - 1) * pageable.getPageSize()) + index, track.getInfo().title, track.getInfo().author,
+                        formatDuration(track.getDuration())));
+                index++;
+            }
+            if (pageable.getPage() < pageable.getMaxPages()) {
+                builder.append("\n\n__To see the next page:__ `!!!queue ").append(pageable.getPage() + 1)
+                        .append("`\nTo see the full queue, use !!!queue all");
+            }
+            context.reply(builder.toString());
         }
-        builder.append(String.format(SONG_QUEUE_LINE, pageable.getPage(), pageable.getMaxPages()));
-        int index = 1;
-        for (AudioTrack track : pageable.getListForPage()) {
-            builder.append(String.format(QUEUE_LINE, ((pageable.getPage() - 1) * pageable.getPageSize()) + index, track.getInfo().title, track.getInfo().author,
-                    formatDuration(track.getDuration())));
-            index++;
-        }
-        if (pageable.getPage() < pageable.getMaxPages()) {
-            builder.append("\n\n__To see the next page:__ `!!!queue ").append(pageable.getPage() + 1).append("`");
-        }
-        context.reply(builder.toString());
     }
 }

@@ -8,7 +8,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public abstract class Command extends CommandUtils {
+public abstract class Command {
     private static final Pattern FLAG_PATTERN = Pattern.compile("\\s+-([a-zA-Z]+)");
     public final String[] names;
     public boolean hide = false;

@@ -11,12 +11,10 @@ import java.util.Map;
 
 public class GuildMusicManager {
     private static final Map<Guild, GuildMusicManager> GUILDS = new HashMap<>();
-
     private final Guild guild;
     public final AudioPlayer player;
     public final TrackScheduler scheduler;
     private final AudioPlayerSendHandler sendHandler;
-
     public boolean open = false;
 
     private GuildMusicManager(Guild guild, TextChannel textChannel, AudioPlayerManager playerManager) {

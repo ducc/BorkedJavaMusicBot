@@ -4,6 +4,8 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import ovh.not.javamusicbot.Command;
 import ovh.not.javamusicbot.GuildMusicManager;
 
+import static ovh.not.javamusicbot.Utils.formatDuration;
+
 public class RestartCommand extends Command {
     public RestartCommand() {
         super("restart");

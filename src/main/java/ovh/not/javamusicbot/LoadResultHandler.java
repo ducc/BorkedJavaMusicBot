@@ -6,7 +6,7 @@ import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 
-import static ovh.not.javamusicbot.CommandUtils.formatDuration;
+import static ovh.not.javamusicbot.Utils.formatDuration;
 
 public class LoadResultHandler implements AudioLoadResultHandler {
     private final CommandManager commandManager;

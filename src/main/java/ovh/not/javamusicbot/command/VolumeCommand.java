@@ -5,6 +5,7 @@ import ovh.not.javamusicbot.Command;
 public class VolumeCommand extends Command {
     public VolumeCommand() {
         super("volume", "v");
+        hide = true;
     }
 
     @Override
