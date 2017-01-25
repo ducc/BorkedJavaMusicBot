@@ -51,6 +51,9 @@ public class LoadResultHandler implements AudioLoadResultHandler {
             Selection<AudioTrack, String> selection = new Selection<>(audioTracks, formatter, (found, track) -> {
                 if (!found) {
                     context.reply("Selection cancelled!");
+                    if (musicManager.player.getPlayingTrack() == null && musicManager.scheduler.queue.size() == 0) {
+                        musicManager.close();
+                    }
                     return;
                 }
                 trackLoaded(track);

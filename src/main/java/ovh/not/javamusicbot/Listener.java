@@ -5,6 +5,7 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
+import net.dv8tion.jda.core.events.guild.GuildLeaveEvent;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import org.json.JSONObject;
@@ -57,13 +58,13 @@ class Listener extends ListenerAdapter {
     @Override
     public void onGuildJoin(GuildJoinEvent event) {
         int guilds = event.getJDA().getGuilds().size();
-        JDA.ShardInfo shardInfo = event.getJDA().getShardInfo();
-        int shardCount = shardInfo.getShardTotal();
-        int shardId = shardInfo.getShardId();
         System.out.println(String.format("Joined guild: %s - #%d", event.getGuild().getName(), guilds));
         if (config.dev) {
             return;
         }
+        JDA.ShardInfo shardInfo = event.getJDA().getShardInfo();
+        int shardCount = shardInfo.getShardTotal();
+        int shardId = shardInfo.getShardId();
         try {
             if (config.carbon != null && config.carbon.length() > 0) {
                 Unirest.post(CARBON_DATA_URL)
@@ -89,6 +90,16 @@ class Listener extends ListenerAdapter {
             }
         } catch (UnirestException e) {
             e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onGuildLeave(GuildLeaveEvent event) {
+        if (GuildMusicManager.GUILDS.containsKey(event.getGuild())) {
+            GuildMusicManager musicManager = GuildMusicManager.GUILDS.remove(event.getGuild());
+            musicManager.player.stopTrack();
+            musicManager.scheduler.queue.clear();
+            musicManager.close();
         }
     }
 }

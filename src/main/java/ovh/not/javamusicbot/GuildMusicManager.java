@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class GuildMusicManager {
-    private static final Map<Guild, GuildMusicManager> GUILDS = new HashMap<>();
+    static final Map<Guild, GuildMusicManager> GUILDS = new HashMap<>();
     private final Guild guild;
     public final AudioPlayer player;
     public final TrackScheduler scheduler;
