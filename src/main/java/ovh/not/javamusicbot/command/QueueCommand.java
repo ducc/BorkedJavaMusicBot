@@ -53,7 +53,7 @@ public class QueueCommand extends Command {
             Unirest.post(HASTEBIN_URL).body(builder.toString()).asJsonAsync(new Callback<JsonNode>() {
                 @Override
                 public void completed(HttpResponse<JsonNode> httpResponse) {
-                    context.reply(String.format("Full song queue: https://hastebin.com/%s.txt", httpResponse.getBody()
+                    context.reply(String.format("Full song queue: https://hastebin.com/raw/%s", httpResponse.getBody()
                             .getObject().getString("key")));
                 }
 
@@ -100,7 +100,7 @@ public class QueueCommand extends Command {
             }
             if (pageable.getPage() < pageable.getMaxPages()) {
                 builder.append("\n\n__To see the next page:__ `!!!queue ").append(pageable.getPage() + 1)
-                        .append("`\nTo see the full queue, use !!!queue all");
+                        .append("`\nTo see the full queue, use `!!!queue all`");
             }
             context.reply(builder.toString());
         }
