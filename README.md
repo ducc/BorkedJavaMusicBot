@@ -22,28 +22,31 @@ The source code for dabBot
 ## Dependencies
 Dependencies are managed by Maven. See the maven [pom.xml](https://github.com/sponges/JavaMusicBot/blob/master/pom.xml) file.
 ```xml
-<dependencies>
-    <dependency>
-        <groupId>net.dv8tion</groupId>
-        <artifactId>JDA</artifactId>
-        <version>3.0.BETA2_119</version>
-    </dependency>
-    <dependency>
-        <groupId>com.sedmelluq</groupId>
-        <artifactId>lavaplayer</artifactId>
-        <version>1.1.37</version>
-    </dependency>
-    <dependency>
-        <groupId>com.moandjiezana.toml</groupId>
-        <artifactId>toml4j</artifactId>
-        <version>0.7.1</version>
-    </dependency>
-    <dependency>
-        <groupId>com.mashape.unirest</groupId>
-        <artifactId>unirest-java</artifactId>
-        <version>1.4.9</version>
-    </dependency>
-</dependencies>
+<dependency>
+    <groupId>net.dv8tion</groupId>
+    <artifactId>JDA</artifactId>
+    <version>3.0.BETA2_122</version>
+</dependency>
+<dependency>
+    <groupId>com.sedmelluq</groupId>
+    <artifactId>lavaplayer</artifactId>
+    <version>1.1.42</version>
+</dependency>
+<dependency>
+    <groupId>com.moandjiezana.toml</groupId>
+    <artifactId>toml4j</artifactId>
+    <version>0.7.1</version>
+</dependency>
+<dependency>
+    <groupId>com.mashape.unirest</groupId>
+    <artifactId>unirest-java</artifactId>
+    <version>1.4.9</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.commons</groupId>
+    <artifactId>commons-lang3</artifactId>
+    <version>3.5</version>
+</dependency>
 ```
 
 ## License
