@@ -15,6 +15,7 @@ import java.util.Queue;
 
 import static ovh.not.javamusicbot.Utils.HASTEBIN_URL;
 import static ovh.not.javamusicbot.Utils.formatDuration;
+import static ovh.not.javamusicbot.Utils.formatLongDuration;
 
 @SuppressWarnings("unchecked")
 public class QueueCommand extends Command {
@@ -39,17 +40,21 @@ public class QueueCommand extends Command {
         Queue<AudioTrack> queue = musicManager.scheduler.queue;
         StringBuilder builder = new StringBuilder();
         if (context.args.length > 0 && context.args[0].equalsIgnoreCase("all")) {
-            builder.append(String.format("Song queue for %s - %d songs.\nCurrent song: %s by %s [%s/%s]\n",
-                    context.event.getGuild().getName(), queue.size(), playing.getInfo().title,
-                    playing.getInfo().author, formatDuration(playing.getPosition()),
-                    formatDuration(playing.getDuration())));
+            long durationTotal = playing.getDuration();
             List<AudioTrack> list = (List<AudioTrack>) queue;
+            StringBuilder items = new StringBuilder();
             for (int i = 0; i < list.size(); i++) {
                 AudioTrack track = list.get(i);
-                builder.append(String.format("\n%02d %s by %s [%s/%s]", i + 1, track.getInfo().title,
+                durationTotal += track.getDuration();
+                items.append(String.format("\n%02d %s by %s [%s/%s]", i + 1, track.getInfo().title,
                         track.getInfo().author, formatDuration(track.getPosition()),
                         formatDuration(track.getDuration())));
             }
+            builder.append(String.format("Song queue for %s - %d songs (%s).\nCurrent song: %s by %s [%s/%s]\n",
+                    context.event.getGuild().getName(), queue.size(), formatLongDuration(durationTotal), playing.getInfo().title,
+                    playing.getInfo().author, formatDuration(playing.getPosition()),
+                    formatDuration(playing.getDuration())));
+            builder.append(items.toString());
             Unirest.post(HASTEBIN_URL).body(builder.toString()).asJsonAsync(new Callback<JsonNode>() {
                 @Override
                 public void completed(HttpResponse<JsonNode> httpResponse) {

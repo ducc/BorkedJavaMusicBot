@@ -1,11 +1,17 @@
 package ovh.not.javamusicbot;
 
+import org.apache.commons.lang3.time.DurationFormatUtils;
+
 public abstract class Utils {
     public static final String HASTEBIN_URL = "https://hastebin.com/documents";
-    private static final String DURATION_FORMAT = "%02d:%02d";
+    private static final String DURATION_FORMAT = "mm:ss";
+    private static final String DURATION_FORMAT_LONG = "HH:mm:ss";
 
     public static String formatDuration(long duration) {
-        long absSeconds = Math.abs(duration / 1000);
-        return String.format(DURATION_FORMAT, (absSeconds % 3600) / 60, absSeconds % 60);
+        return DurationFormatUtils.formatDuration(duration, DURATION_FORMAT);
+    }
+
+    public static String formatLongDuration(long duration) {
+        return DurationFormatUtils.formatDuration(duration, DURATION_FORMAT_LONG);
     }
 }
