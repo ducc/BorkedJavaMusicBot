@@ -3,6 +3,7 @@ package ovh.not.javamusicbot;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.core.events.guild.GuildLeaveEvent;
@@ -59,6 +60,10 @@ class Listener extends ListenerAdapter {
     public void onGuildJoin(GuildJoinEvent event) {
         int guilds = event.getJDA().getGuilds().size();
         System.out.println(String.format("Joined guild: %s - #%d", event.getGuild().getName(), guilds));
+        TextChannel publicChannel = event.getGuild().getPublicChannel();
+        if (publicChannel != null && publicChannel.canTalk()) {
+            publicChannel.sendMessage(config.join).complete();
+        }
         if (config.dev) {
             return;
         }

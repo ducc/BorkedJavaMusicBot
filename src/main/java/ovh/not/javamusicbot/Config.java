@@ -8,6 +8,7 @@ public class Config {
     String game;
     public String invite;
     public String about;
+    String join;
     String carbon;
     String dbots;
 }
