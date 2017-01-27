@@ -4,7 +4,9 @@ import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.VoiceChannel;
+import net.dv8tion.jda.core.exceptions.PermissionException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,10 +28,21 @@ public class GuildMusicManager {
         this.guild.getAudioManager().setSendingHandler(sendHandler);
     }
 
-    public void open(VoiceChannel channel) {
-        guild.getAudioManager().openAudioConnection(channel);
-        guild.getAudioManager().setSelfDeafened(true);
-        open = true;
+    public void open(VoiceChannel channel, User user) {
+        try {
+            guild.getAudioManager().openAudioConnection(channel);
+            guild.getAudioManager().setSelfDeafened(true);
+            open = true;
+        } catch (PermissionException e) {
+            if (user != null && !user.isBot()) {
+                user.getPrivateChannel().sendMessage("**dabBot does not have permission to connect to the "
+                        + channel.getName() + " voice channel.**\nTo fix this, allow dabBot to `Connect` " +
+                        "and `Speak` in that voice channel.\nIf you are not the guild owner, please send " +
+                        "this to them.").complete();
+            } else {
+                e.printStackTrace();
+            }
+        }
     }
 
     public void close() {

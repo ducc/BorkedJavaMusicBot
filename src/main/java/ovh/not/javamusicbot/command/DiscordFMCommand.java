@@ -91,7 +91,7 @@ public class DiscordFMCommand extends Command {
             playerManager.loadItem(song, handler);
         }
         if (!musicManager.open) {
-            musicManager.open(channel);
+            musicManager.open(channel, context.event.getAuthor());
         }
     }
 

@@ -32,7 +32,7 @@ public class MoveCommand extends Command {
         VoiceChannel channel = channels.get(0);
         musicManager.player.setPaused(true);
         musicManager.close();
-        musicManager.open(channel);
+        musicManager.open(channel, context.event.getAuthor());
         musicManager.player.setPaused(false);
         context.reply("Moved voice channel!");
     }

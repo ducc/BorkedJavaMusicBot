@@ -42,7 +42,7 @@ public class PlayCommand extends Command {
         }
         playerManager.loadItem(String.join(" ", context.args), handler);
         if (!musicManager.open) {
-            musicManager.open(channel);
+            musicManager.open(channel, context.event.getAuthor());
         }
     }
 }

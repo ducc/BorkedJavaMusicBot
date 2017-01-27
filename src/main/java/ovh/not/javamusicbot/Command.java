@@ -2,6 +2,7 @@ package ovh.not.javamusicbot;
 
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.exceptions.PermissionException;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -26,7 +27,15 @@ public abstract class Command {
         public String[] args;
 
         public Message reply(String message) {
-            return event.getChannel().sendMessage(message).complete();
+            try {
+                return event.getChannel().sendMessage(message).complete();
+            } catch (PermissionException e) {
+                event.getAuthor().getPrivateChannel().sendMessage("**dabBot does not have permission to talk in the #"
+                        + event.getTextChannel().getName() + " text channel.**\nTo fix this, allow dabBot to " +
+                        "`Read Messages` and `Send Messages` in that text channel.\nIf you are not the guild " +
+                        "owner, please send this to them.").complete();
+                return null;
+            }
         }
 
         public Set<String> parseFlags() {

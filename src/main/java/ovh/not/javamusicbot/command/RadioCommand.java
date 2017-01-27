@@ -63,7 +63,7 @@ public class RadioCommand extends Command {
         musicManager.player.stopTrack();
         playerManager.loadItem(url, handler);
         if (!musicManager.open) {
-            musicManager.open(channel);
+            musicManager.open(channel, context.event.getAuthor());
         }
     }
 }
