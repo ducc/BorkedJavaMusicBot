@@ -18,6 +18,7 @@ public class GuildMusicManager {
     public final TrackScheduler scheduler;
     private final AudioPlayerSendHandler sendHandler;
     public boolean open = false;
+    public VoiceChannel channel = null;
 
     private GuildMusicManager(Guild guild, TextChannel textChannel, AudioPlayerManager playerManager) {
         this.guild = guild;
@@ -32,6 +33,7 @@ public class GuildMusicManager {
         try {
             guild.getAudioManager().openAudioConnection(channel);
             guild.getAudioManager().setSelfDeafened(true);
+            this.channel = channel;
             open = true;
         } catch (PermissionException e) {
             if (user != null && !user.isBot()) {
@@ -47,6 +49,7 @@ public class GuildMusicManager {
 
     public void close() {
         guild.getAudioManager().closeAudioConnection();
+        this.channel = null;
         open = false;
     }
 

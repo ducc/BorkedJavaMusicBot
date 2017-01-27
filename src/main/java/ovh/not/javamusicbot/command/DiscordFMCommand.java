@@ -3,6 +3,7 @@ package ovh.not.javamusicbot.command;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
+import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -58,6 +59,13 @@ public class DiscordFMCommand extends Command {
         }
         GuildMusicManager musicManager = GuildMusicManager.getOrCreate(context.event.getGuild(),
                 context.event.getTextChannel(), playerManager);
+        if (musicManager.open && musicManager.player.getPlayingTrack() != null
+                && musicManager.channel != channel
+                && !context.event.getMember().hasPermission(musicManager.channel, Permission.VOICE_MOVE_OTHERS)) {
+            context.reply("dabBot is already playing music in " + musicManager.channel.getName() + " so it cannot " +
+                    "be moved. Members with the `VOICE_MOVE_OTHERS` permission are exempt from this.");
+            return;
+        }
         String libraryName = String.join(" ", context.args);
         Library library = null;
         for (Library lib : libraries) {

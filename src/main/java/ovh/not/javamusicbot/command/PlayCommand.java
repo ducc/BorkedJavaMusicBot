@@ -1,6 +1,7 @@
 package ovh.not.javamusicbot.command;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
+import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import ovh.not.javamusicbot.Command;
 import ovh.not.javamusicbot.CommandManager;
@@ -34,6 +35,13 @@ public class PlayCommand extends Command {
         }
         GuildMusicManager musicManager = GuildMusicManager.getOrCreate(context.event.getGuild(),
                 context.event.getTextChannel(), playerManager);
+        if (musicManager.open && musicManager.player.getPlayingTrack() != null
+                && musicManager.channel != channel
+                && !context.event.getMember().hasPermission(musicManager.channel, Permission.VOICE_MOVE_OTHERS)) {
+            context.reply("dabBot is already playing music in " + musicManager.channel.getName() + " so it cannot " +
+                    "be moved. Members with the `VOICE_MOVE_OTHERS` permission are exempt from this.");
+            return;
+        }
         LoadResultHandler handler = new LoadResultHandler(commandManager, musicManager, playerManager, context);
         handler.allowSearch = true;
         Set<String> flags = context.parseFlags();
