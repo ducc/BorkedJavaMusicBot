@@ -2,28 +2,25 @@ package ovh.not.javamusicbot.command;
 
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
-import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.VoiceChannel;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import ovh.not.javamusicbot.*;
+import ovh.not.javamusicbot.Command;
+import ovh.not.javamusicbot.MusicBot;
+import ovh.not.javamusicbot.impl.DiscordServer;
+import ovh.not.javamusicbot.lib.AlreadyConnectedException;
+import ovh.not.javamusicbot.lib.PermissionException;
 
 @SuppressWarnings("ConstantConditions")
 public class DiscordFMCommand extends Command {
     private static final String DFM_BASE_URL = "http://temp.discord.fm";
     private static final String DFM_LIBRARIES_URL = DFM_BASE_URL + "/libraries/json";
     private static final String DFM_LIBRARY_URL = DFM_BASE_URL + "/libraries/%s/json";
-
-    private final CommandManager commandManager;
-    private final AudioPlayerManager playerManager;
     private final Library[] libraries;
     private final String usageResponse;
 
-    public DiscordFMCommand(CommandManager commandManager, AudioPlayerManager playerManager) {
+    public DiscordFMCommand() {
         super("discordfm", "dfm");
-        this.commandManager = commandManager;
-        this.playerManager = playerManager;
         JSONArray array = null;
         try {
             array = Unirest.get(DFM_LIBRARIES_URL).header("User-Agent", MusicBot.USER_AGENT).asJson().getBody().getArray();
@@ -48,8 +45,7 @@ public class DiscordFMCommand extends Command {
 
     @Override
     public void on(Context context) {
-        VoiceChannel channel = context.event.getMember().getVoiceState().getChannel();
-        if (channel == null) {
+        if (!context.inVoiceChannel()) {
             context.reply("You must be in a voice channel!");
             return;
         }
@@ -57,13 +53,12 @@ public class DiscordFMCommand extends Command {
             context.reply(usageResponse);
             return;
         }
-        GuildMusicManager musicManager = GuildMusicManager.getOrCreate(context.event.getGuild(),
-                context.event.getTextChannel(), playerManager);
-        if (musicManager.open && musicManager.player.getPlayingTrack() != null
-                && musicManager.channel != channel
-                && !context.event.getMember().hasPermission(musicManager.channel, Permission.VOICE_MOVE_OTHERS)) {
-            context.reply("dabBot is already playing music in " + musicManager.channel.getName() + " so it cannot " +
-                    "be moved. Members with the `VOICE_MOVE_OTHERS` permission are exempt from this.");
+        if (context.server.isPlaying() && ((DiscordServer) context.server).voiceChannel != context.getVoiceChannel()
+                && !context.event.getMember().hasPermission(((DiscordServer) context.server).voiceChannel,
+                Permission.VOICE_MOVE_OTHERS)) {
+            context.reply("dabBot is already playing music in "
+                    + ((DiscordServer) context.server).voiceChannel.getName() + " so it cannot be moved. Members " +
+                    "with the `VOICE_MOVE_OTHERS` permission are exempt from this.");
             return;
         }
         String libraryName = String.join(" ", context.args);
@@ -90,16 +85,20 @@ public class DiscordFMCommand extends Command {
             context.reply("An error occurred!");
             return;
         }
-        musicManager.scheduler.queue.clear();
-        musicManager.scheduler.repeat = false;
-        musicManager.player.stopTrack();
-        LoadResultHandler handler = new LoadResultHandler(commandManager, musicManager, playerManager, context);
-        handler.verbose = false;
-        for (String song : songs) {
-            playerManager.loadItem(song, handler);
+        context.server.getSongQueue().clear();
+        // TODO musicManager.scheduler.repeat = false;
+        context.server.stop();
+        // TODO handler.verbose = false;
+        if (!context.server.isConnected()) {
+            try {
+                context.server.connect(context.getVoiceChannel());
+            } catch (AlreadyConnectedException | PermissionException e) {
+                context.handleException(e);
+                return;
+            }
         }
-        if (!musicManager.open) {
-            musicManager.open(channel, context.event.getAuthor());
+        for (String song : songs) {
+            context.server.load(song);
         }
     }
 

@@ -2,6 +2,9 @@ package ovh.not.javamusicbot;
 
 import com.google.gson.Gson;
 import com.moandjiezana.toml.Toml;
+import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
+import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
+import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
@@ -43,12 +46,15 @@ public final class MusicBot {
     }
 
     private static JDA setup(Config config, Constants constants, boolean sharding, int shard, int shardCount) {
+        AudioPlayerManager audioPlayerManager = new DefaultAudioPlayerManager();
+        AudioSourceManagers.registerRemoteSources(audioPlayerManager);
         CommandManager commandManager = new CommandManager(config, constants);
+        ServerManager serverManager = new ServerManager(audioPlayerManager);
         JDA jda;
         try {
             JDABuilder builder = new JDABuilder(AccountType.BOT)
                     .setToken(config.token)
-                    .addListener(new Listener(config, commandManager));
+                    .addListener(new Listener(config, commandManager, serverManager));
             if (sharding) {
                 builder.useSharding(shard, shardCount);
             }

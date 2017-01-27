@@ -1,23 +1,21 @@
 package ovh.not.javamusicbot.command;
 
-import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.VoiceChannel;
-import ovh.not.javamusicbot.*;
+import ovh.not.javamusicbot.Command;
+import ovh.not.javamusicbot.Constants;
+import ovh.not.javamusicbot.impl.DiscordServer;
+import ovh.not.javamusicbot.lib.AlreadyConnectedException;
+import ovh.not.javamusicbot.lib.PermissionException;
 
 import java.util.Iterator;
 import java.util.Map;
 
 public class RadioCommand extends Command {
-    private final CommandManager commandManager;
-    private final AudioPlayerManager playerManager;
     private final Constants constants;
     private final String usageMessage;
 
-    public RadioCommand(CommandManager commandManager, AudioPlayerManager playerManager, Constants constants) {
+    public RadioCommand(Constants constants) {
         super("radio", "station", "stations", "fm");
-        this.commandManager = commandManager;
-        this.playerManager = playerManager;
         this.constants = constants;
         StringBuilder builder = new StringBuilder("Streams a variety of UK radio stations.\n" +
                 "Usage: `!!!radio <station>`\n" +
@@ -35,6 +33,10 @@ public class RadioCommand extends Command {
 
     @Override
     public void on(Context context) {
+        if (!context.inVoiceChannel()) {
+            context.reply("You must be in a voice channel!");
+            return;
+        }
         if (context.args.length == 0) {
             context.reply(usageMessage);
             return;
@@ -51,27 +53,25 @@ public class RadioCommand extends Command {
             context.reply("Invalid station! For usage & stations, use `!!!radio`");
             return;
         }
-        VoiceChannel channel = context.event.getMember().getVoiceState().getChannel();
-        if (channel == null) {
-            context.reply("You must be in a voice channel!");
+        if (context.server.isPlaying() && ((DiscordServer) context.server).voiceChannel != context.getVoiceChannel()
+                && !context.event.getMember().hasPermission(((DiscordServer) context.server).voiceChannel,
+                Permission.VOICE_MOVE_OTHERS)) {
+            context.reply("dabBot is already playing music in "
+                    + ((DiscordServer) context.server).voiceChannel.getName() + " so it cannot be moved. Members " +
+                    "with the `VOICE_MOVE_OTHERS` permission are exempt from this.");
             return;
         }
-        GuildMusicManager musicManager = GuildMusicManager.getOrCreate(context.event.getGuild(),
-                context.event.getTextChannel(), playerManager);
-        if (musicManager.open && musicManager.player.getPlayingTrack() != null
-                && musicManager.channel != channel
-                && !context.event.getMember().hasPermission(musicManager.channel, Permission.VOICE_MOVE_OTHERS)) {
-            context.reply("dabBot is already playing music in " + musicManager.channel.getName() + " so it cannot " +
-                    "be moved. Members with the `VOICE_MOVE_OTHERS` permission are exempt from this.");
-            return;
+        context.server.stop();
+        context.server.getSongQueue().clear();
+        // TODO musicManager.scheduler.repeat = false;
+        if (!context.server.isConnected()) {
+            try {
+                context.server.connect(context.getVoiceChannel());
+            } catch (AlreadyConnectedException | PermissionException e) {
+                context.handleException(e);
+                return;
+            }
         }
-        LoadResultHandler handler = new LoadResultHandler(commandManager, musicManager, playerManager, context);
-        musicManager.scheduler.queue.clear();
-        musicManager.scheduler.repeat = false;
-        musicManager.player.stopTrack();
-        playerManager.loadItem(url, handler);
-        if (!musicManager.open) {
-            musicManager.open(channel, context.event.getAuthor());
-        }
+        context.server.load(url);
     }
 }

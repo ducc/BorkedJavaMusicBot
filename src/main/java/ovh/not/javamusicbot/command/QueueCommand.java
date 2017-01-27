@@ -5,17 +5,13 @@ import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.async.Callback;
 import com.mashape.unirest.http.exceptions.UnirestException;
-import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import ovh.not.javamusicbot.Command;
-import ovh.not.javamusicbot.GuildMusicManager;
 import ovh.not.javamusicbot.Pageable;
+import ovh.not.javamusicbot.lib.Song;
 
 import java.util.List;
-import java.util.Queue;
 
-import static ovh.not.javamusicbot.Utils.HASTEBIN_URL;
-import static ovh.not.javamusicbot.Utils.formatDuration;
-import static ovh.not.javamusicbot.Utils.formatLongDuration;
+import static ovh.not.javamusicbot.Utils.*;
 
 @SuppressWarnings("unchecked")
 public class QueueCommand extends Command {
@@ -31,28 +27,25 @@ public class QueueCommand extends Command {
 
     @Override
     public void on(Context context) {
-        GuildMusicManager musicManager = GuildMusicManager.get(context.event.getGuild());
-        if (musicManager == null || musicManager.player.getPlayingTrack() == null) {
+        if (!context.server.isPlaying()) {
             context.reply("No music is queued or playing on this guild!");
             return;
         }
-        AudioTrack playing = musicManager.player.getPlayingTrack();
-        Queue<AudioTrack> queue = musicManager.scheduler.queue;
+        Song playing = context.server.getCurrentSong();
+        List<Song> queue = (List<Song>) context.server.getSongQueue().get();
         StringBuilder builder = new StringBuilder();
         if (context.args.length > 0 && context.args[0].equalsIgnoreCase("all")) {
             long durationTotal = playing.getDuration();
-            List<AudioTrack> list = (List<AudioTrack>) queue;
             StringBuilder items = new StringBuilder();
-            for (int i = 0; i < list.size(); i++) {
-                AudioTrack track = list.get(i);
-                durationTotal += track.getDuration();
-                items.append(String.format("\n%02d %s by %s [%s/%s]", i + 1, track.getInfo().title,
-                        track.getInfo().author, formatDuration(track.getPosition()),
-                        formatDuration(track.getDuration())));
+            for (int i = 0; i < queue.size(); i++) {
+                Song song = queue.get(i);
+                durationTotal += song.getDuration();
+                items.append(String.format("\n%02d %s by %s [%s]", i + 1, song.getTitle(),
+                        song.getAuthor(), formatDuration(song.getDuration())));
             }
             builder.append(String.format("Song queue for %s - %d songs (%s).\nCurrent song: %s by %s [%s/%s]\n",
-                    context.event.getGuild().getName(), queue.size(), formatLongDuration(durationTotal), playing.getInfo().title,
-                    playing.getInfo().author, formatDuration(playing.getPosition()),
+                    context.event.getGuild().getName(), queue.size(), formatLongDuration(durationTotal),
+                    playing.getTitle(), playing.getAuthor(), formatDuration(playing.getPosition()),
                     formatDuration(playing.getDuration())));
             builder.append(items.toString());
             Unirest.post(HASTEBIN_URL).body(builder.toString()).asJsonAsync(new Callback<JsonNode>() {
@@ -74,9 +67,9 @@ public class QueueCommand extends Command {
                 }
             });
         } else {
-            builder.append(String.format(CURRENT_LINE, playing.getInfo().title, playing.getInfo().author,
+            builder.append(String.format(CURRENT_LINE, playing.getTitle(), playing.getAuthor(),
                     formatDuration(playing.getPosition()) + "/" + formatDuration(playing.getDuration())));
-            Pageable<AudioTrack> pageable = new Pageable<>((List<AudioTrack>) queue);
+            Pageable<Song> pageable = new Pageable<>(queue);
             pageable.setPageSize(PAGE_SIZE);
             if (context.args.length > 0) {
                 int page;
@@ -98,9 +91,9 @@ public class QueueCommand extends Command {
             }
             builder.append(String.format(SONG_QUEUE_LINE, pageable.getPage(), pageable.getMaxPages()));
             int index = 1;
-            for (AudioTrack track : pageable.getListForPage()) {
-                builder.append(String.format(QUEUE_LINE, ((pageable.getPage() - 1) * pageable.getPageSize()) + index, track.getInfo().title, track.getInfo().author,
-                        formatDuration(track.getDuration())));
+            for (Song song : pageable.getListForPage()) {
+                builder.append(String.format(QUEUE_LINE, ((pageable.getPage() - 1) * pageable.getPageSize()) + index,
+                        song.getTitle(), song.getAuthor(), formatDuration(song.getDuration())));
                 index++;
             }
             if (pageable.getPage() < pageable.getMaxPages()) {

@@ -4,7 +4,9 @@ import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import ovh.not.javamusicbot.Command;
-import ovh.not.javamusicbot.GuildMusicManager;
+import ovh.not.javamusicbot.impl.DiscordServer;
+import ovh.not.javamusicbot.lib.AlreadyConnectedException;
+import ovh.not.javamusicbot.lib.PermissionException;
 
 import java.util.List;
 
@@ -15,15 +17,16 @@ public class MoveCommand extends Command {
 
     @Override
     public void on(Context context) {
-        GuildMusicManager musicManager = GuildMusicManager.get(context.event.getGuild());
-        if (musicManager == null || musicManager.player.getPlayingTrack() == null) {
+        if (!context.server.isPlaying()) {
             context.reply("No music is playing on this guild!");
             return;
         }
-        if (musicManager.open && musicManager.player.getPlayingTrack() != null
-                && !context.event.getMember().hasPermission(musicManager.channel, Permission.VOICE_MOVE_OTHERS)) {
-            context.reply("dabBot is already playing music in " + musicManager.channel.getName() + " so it cannot " +
-                    "be moved. Members with the `VOICE_MOVE_OTHERS` permission are exempt from this.");
+        if (context.server.isPlaying()
+                && !context.event.getMember().hasPermission(((DiscordServer) context.server).voiceChannel,
+                Permission.VOICE_MOVE_OTHERS)) {
+            context.reply("dabBot is already playing music in "
+                    + ((DiscordServer) context.server).voiceChannel.getName() + " so it cannot be moved. Members " +
+                    "with the `VOICE_MOVE_OTHERS` permission are exempt from this.");
             return;
         }
         if (context.args.length == 0) {
@@ -37,10 +40,15 @@ public class MoveCommand extends Command {
             return;
         }
         VoiceChannel channel = channels.get(0);
-        musicManager.player.setPaused(true);
-        musicManager.close();
-        musicManager.open(channel, context.event.getAuthor());
-        musicManager.player.setPaused(false);
+        context.server.pause();
+        context.server.disconnect();
+        try {
+            context.server.connect(channel);
+        } catch (AlreadyConnectedException | PermissionException e) {
+            context.handleException(e);
+            return;
+        }
+        context.server.resume();
         context.reply("Moved voice channel!");
     }
 }

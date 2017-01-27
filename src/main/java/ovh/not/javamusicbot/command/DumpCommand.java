@@ -5,9 +5,8 @@ import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.async.Callback;
 import com.mashape.unirest.http.exceptions.UnirestException;
-import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import ovh.not.javamusicbot.Command;
-import ovh.not.javamusicbot.GuildMusicManager;
+import ovh.not.javamusicbot.lib.Song;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,17 +21,16 @@ public class DumpCommand extends Command {
 
     @Override
     public void on(Context context) {
-        GuildMusicManager musicManager = GuildMusicManager.get(context.event.getGuild());
-        if (musicManager == null || musicManager.player.getPlayingTrack() == null) {
+        if (!context.server.isPlaying()) {
             context.reply("No music is playing on this guild!");
             return;
         }
         List<DumpItem> items = new ArrayList<>();
-        AudioTrack current = musicManager.player.getPlayingTrack();
-        items.add(new DumpItem(0, current.getSourceManager().getSourceName(), current.getIdentifier()));
+        Song current = context.server.getCurrentSong();
+        items.add(new DumpItem(0, current.getSource(), current.getIdentifier()));
         int i = 1;
-        for (AudioTrack track : musicManager.scheduler.queue) {
-            items.add(new DumpItem(i, track.getSourceManager().getSourceName(), track.getIdentifier()));
+        for (Song song : context.server.getSongQueue().get()) {
+            items.add(new DumpItem(i, song.getSource(), song.getIdentifier()));
             i++;
         }
         String json = GSON.toJson(items);

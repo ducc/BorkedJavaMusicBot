@@ -1,7 +1,6 @@
 package ovh.not.javamusicbot.command;
 
 import ovh.not.javamusicbot.Command;
-import ovh.not.javamusicbot.GuildMusicManager;
 
 public class PauseCommand extends Command {
     public PauseCommand() {
@@ -10,16 +9,15 @@ public class PauseCommand extends Command {
 
     @Override
     public void on(Context context) {
-        GuildMusicManager musicManager = GuildMusicManager.get(context.event.getGuild());
-        if (musicManager == null || musicManager.player.getPlayingTrack() == null) {
+        if (!context.server.isPlaying()) {
             context.reply("No music is playing on this guild!");
             return;
         }
-        boolean action = !musicManager.player.isPaused();
-        musicManager.player.setPaused(action);
-        if (action) {
+        if (!context.server.isPaused()) {
+            context.server.pause();
             context.reply("Paused music playback!");
         } else {
+            context.server.resume();
             context.reply("Resumed music playback!");
         }
     }

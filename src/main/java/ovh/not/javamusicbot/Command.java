@@ -1,8 +1,11 @@
 package ovh.not.javamusicbot;
 
 import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.exceptions.PermissionException;
+import ovh.not.javamusicbot.lib.AlreadyConnectedException;
+import ovh.not.javamusicbot.lib.Server;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -24,6 +27,7 @@ public abstract class Command {
 
     protected class Context {
         public MessageReceivedEvent event;
+        public Server server;
         public String[] args;
 
         public Message reply(String message) {
@@ -48,6 +52,28 @@ public abstract class Command {
             content = content.replaceAll("\\s+-([a-zA-Z]+)", "");
             args = content.split("\\s+");
             return matches;
+        }
+
+        public VoiceChannel getVoiceChannel() {
+            return event.getMember().getVoiceState().getChannel();
+        }
+
+        public boolean inVoiceChannel() {
+            return getVoiceChannel() != null;
+        }
+
+        @SuppressWarnings("StatementWithEmptyBody")
+        public void handleException(Exception e) {
+            if (e instanceof PermissionException) {
+                event.getAuthor().getPrivateChannel().sendMessage("**dabBot does not have permission to connect to the "
+                        + getVoiceChannel().getName() + " voice channel.**\nTo fix this, allow dabBot to `Connect` " +
+                        "and `Speak` in that voice channel.\nIf you are not the guild owner, please send " +
+                        "this to them.").complete();
+            } else if (e instanceof AlreadyConnectedException) {
+            } else {
+                reply("An error occurred!");
+                e.printStackTrace();
+            }
         }
     }
 }

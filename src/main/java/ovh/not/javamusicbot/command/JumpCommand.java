@@ -1,7 +1,6 @@
 package ovh.not.javamusicbot.command;
 
 import ovh.not.javamusicbot.Command;
-import ovh.not.javamusicbot.GuildMusicManager;
 
 import java.time.Duration;
 import java.util.regex.Matcher;
@@ -16,8 +15,7 @@ public class JumpCommand extends Command {
 
     @Override
     public void on(Context context) {
-        GuildMusicManager musicManager = GuildMusicManager.get(context.event.getGuild());
-        if (musicManager == null || musicManager.player.getPlayingTrack() == null) {
+        if (!context.server.isPlaying()) {
             context.reply("No music is playing on this guild!");
             return;
         }
@@ -61,7 +59,7 @@ public class JumpCommand extends Command {
         long time = Duration.ofHours(hours).toMillis();
         time += Duration.ofMinutes(minutes).toMillis();
         time += Duration.ofSeconds(seconds).toMillis();
-        musicManager.player.getPlayingTrack().setPosition(time);
+        context.server.getCurrentSong().setPosition(time);
         context.reply("Jumped to the specified position. Use `!!!nowplaying` to see the current song & position.");
     }
 }

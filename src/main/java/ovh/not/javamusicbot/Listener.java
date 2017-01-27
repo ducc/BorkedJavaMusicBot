@@ -10,6 +10,7 @@ import net.dv8tion.jda.core.events.guild.GuildLeaveEvent;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import org.json.JSONObject;
+import ovh.not.javamusicbot.lib.Server;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -19,12 +20,14 @@ class Listener extends ListenerAdapter {
     private static final String DBOTS_STATS_URL = "https://bots.discord.pw/api/bots/%s/stats";
     private final Config config;
     private final CommandManager commandManager;
+    private final ServerManager serverManager;
     private final Pattern commandPattern;
 
-    Listener(Config config, CommandManager commandManager) {
+    Listener(Config config, CommandManager commandManager, ServerManager serverManager) {
         this.config = config;
         this.commandManager = commandManager;
         this.commandPattern = Pattern.compile(config.regex);
+        this.serverManager = serverManager;
     }
 
     @Override
@@ -46,6 +49,7 @@ class Listener extends ListenerAdapter {
         }
         Command.Context context = command.new Context();
         context.event = event;
+        context.server = serverManager.get(event.getGuild());
         if (matcher.groupCount() > 1) {
             String[] matches = matcher.group(2).split("\\s+");
             if (matches.length > 0 && matches[0].equals("")) {
@@ -100,11 +104,11 @@ class Listener extends ListenerAdapter {
 
     @Override
     public void onGuildLeave(GuildLeaveEvent event) {
-        if (GuildMusicManager.GUILDS.containsKey(event.getGuild())) {
-            GuildMusicManager musicManager = GuildMusicManager.GUILDS.remove(event.getGuild());
-            musicManager.player.stopTrack();
-            musicManager.scheduler.queue.clear();
-            musicManager.close();
+        if (serverManager.servers.containsKey(event.getGuild())) {
+            Server server = serverManager.servers.remove(event.getGuild());
+            server.stop();
+            server.getSongQueue().clear();
+            server.disconnect();
         }
     }
 }

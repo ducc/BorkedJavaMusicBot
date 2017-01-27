@@ -1,8 +1,5 @@
 package ovh.not.javamusicbot;
 
-import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
-import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
-import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.dv8tion.jda.core.entities.Member;
 import ovh.not.javamusicbot.command.*;
@@ -15,13 +12,11 @@ public class CommandManager {
     public final Map<Member, Selection<AudioTrack, String>> selectors = new HashMap<>();
 
     CommandManager(Config config, Constants constants) {
-        AudioPlayerManager playerManager = new DefaultAudioPlayerManager();
-        AudioSourceManagers.registerRemoteSources(playerManager);
         CommandManager.register(commands,
                 new AboutCommand(config),
                 new AdminCommand(config),
                 new ChooseCommand(this),
-                new DiscordFMCommand(this, playerManager),
+                new DiscordFMCommand(),
                 new DumpCommand(),
                 new HelpCommand(this, constants),
                 new InviteCommand(config),
@@ -29,9 +24,9 @@ public class CommandManager {
                 new MoveCommand(),
                 new NowPlayingCommand(),
                 new PauseCommand(),
-                new PlayCommand(this, playerManager),
+                new PlayCommand(),
                 new QueueCommand(),
-                new RadioCommand(this, playerManager, constants),
+                new RadioCommand(constants),
                 new ReorderCommand(),
                 new RepeatCommand(),
                 new RestartCommand(),

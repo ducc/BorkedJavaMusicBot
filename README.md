@@ -7,6 +7,7 @@ The source code for dabBot
         mvn clean package        
 2. Create `config.toml`
 
+        dev    = true if development instance
         token  = "Bot application token"
         owner  = "Owner discord user id"
         regex  = "Command parser regex pattern"
