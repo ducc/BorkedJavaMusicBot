@@ -12,4 +12,6 @@ public interface SongQueue {
     void clear();
 
     boolean isEmpty();
+
+    Song getCurrentSong();
 }

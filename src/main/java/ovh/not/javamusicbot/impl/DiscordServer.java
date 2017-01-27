@@ -24,7 +24,6 @@ public class DiscordServer extends AudioEventAdapter implements Server {
     private final DiscordResultHandler resultHandler;
     private boolean playing = false;
     private boolean paused = false;
-    private Song currentSong = null;
     public VoiceChannel voiceChannel = null;
 
     public DiscordServer(Guild guild, AudioPlayerManager audioPlayerManager) {
@@ -40,10 +39,10 @@ public class DiscordServer extends AudioEventAdapter implements Server {
     @Override
     public void play(Song song) {
         if (audioPlayer.startTrack(((DiscordSong) song).audioTrack, true)) {
+            ((DiscordSongQueue) songQueue).current = song;
+        } else {
             songQueue.add(song);
         }
-        currentSong = song;
-        playing = true;
     }
 
     @Override
@@ -54,7 +53,6 @@ public class DiscordServer extends AudioEventAdapter implements Server {
     @Override
     public void stop() {
         audioPlayer.stopTrack();
-        currentSong = null;
         playing = false;
         paused = false;
     }
@@ -89,7 +87,7 @@ public class DiscordServer extends AudioEventAdapter implements Server {
 
     @Override
     public Song getCurrentSong() {
-        return currentSong;
+        return songQueue.getCurrentSong();
     }
 
     @Override
@@ -125,7 +123,7 @@ public class DiscordServer extends AudioEventAdapter implements Server {
 
     @Override
     public void onTrackStart(AudioPlayer player, AudioTrack track) {
-        super.onTrackStart(player, track);
+        playing = true;
     }
 
     @Override

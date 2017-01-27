@@ -9,6 +9,7 @@ import java.util.Queue;
 
 class DiscordSongQueue implements SongQueue {
     private final Queue<Song> queue = new LinkedList<>();
+    Song current = null;
 
     @Override
     public Collection<Song> get() {
@@ -25,7 +26,8 @@ class DiscordSongQueue implements SongQueue {
         if (queue.isEmpty()) {
             return null;
         }
-        return queue.poll();
+        current = queue.poll();
+        return current;
     }
 
     @Override
@@ -36,5 +38,10 @@ class DiscordSongQueue implements SongQueue {
     @Override
     public boolean isEmpty() {
         return queue.isEmpty();
+    }
+
+    @Override
+    public Song getCurrentSong() {
+        return current;
     }
 }
