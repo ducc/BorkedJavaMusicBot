@@ -7,13 +7,15 @@ The source code for dabBot
         mvn clean package        
 2. Create `config.toml`
 
-        toml
         token  = "Bot application token"
         owner  = "Owner discord user id"
         regex  = "Command parser regex pattern"
         game   = "Current playing game"
         invite = "Bot invite link"
-        about  = "My about text"
+        about  = "About text"
+        join   = "Server join message"
+        carbon = "carbonitex.net api key"
+        dbots  = "bots.discord.pw api key"
     Sample pattern: `^\\?([a-zA-Z]+)(?:\\s+)?(.*)?` - for `?` as the prefix.
 3. Run the bot
 
