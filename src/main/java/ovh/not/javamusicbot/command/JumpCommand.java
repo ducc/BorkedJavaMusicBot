@@ -1,6 +1,7 @@
 package ovh.not.javamusicbot.command;
 
 import ovh.not.javamusicbot.Command;
+import ovh.not.javamusicbot.Middlewares;
 
 import java.time.Duration;
 import java.util.regex.Matcher;
@@ -11,14 +12,11 @@ public class JumpCommand extends Command {
 
     public JumpCommand() {
         super("jump");
+        use(Middlewares.MUST_BE_PLAYING);
     }
 
     @Override
     public void on(Context context) {
-        if (!context.server.isPlaying()) {
-            context.reply("No music is playing on this guild!");
-            return;
-        }
         if (context.args.length == 0) {
             context.reply("Usage: `!!!jump <time>`\nExample: `!!!jump 03:51` - starts playing the current song "
                     + "at 3 min 51s instead of at the start.\nTime format: `hh:mm:ss`, e.g. 01:25:51 = 1 hour, "

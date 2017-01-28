@@ -77,9 +77,13 @@ public class DiscordServer extends AudioEventAdapter implements Server {
 
     @Override
     public void next() {
-        if (!audioPlayer.startTrack(((DiscordSong) songQueue.next()).audioTrack, false)) {
+        DiscordSong song = (DiscordSong) songQueue.next();
+        if (song == null) {
             stop();
             disconnect();
+        } else {
+            AudioTrack track = song.audioTrack;
+            audioPlayer.startTrack(track, false);
         }
     }
 

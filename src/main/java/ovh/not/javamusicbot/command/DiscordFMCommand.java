@@ -6,6 +6,7 @@ import net.dv8tion.jda.core.Permission;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import ovh.not.javamusicbot.Command;
+import ovh.not.javamusicbot.Middlewares;
 import ovh.not.javamusicbot.MusicBot;
 import ovh.not.javamusicbot.impl.DiscordServer;
 import ovh.not.javamusicbot.lib.AlreadyConnectedException;
@@ -21,6 +22,7 @@ public class DiscordFMCommand extends Command {
 
     public DiscordFMCommand() {
         super("discordfm", "dfm");
+        use(Middlewares.MUST_BE_IN_VOICE_CHANNEL);
         JSONArray array = null;
         try {
             array = Unirest.get(DFM_LIBRARIES_URL).header("User-Agent", MusicBot.USER_AGENT).asJson().getBody().getArray();
@@ -45,10 +47,6 @@ public class DiscordFMCommand extends Command {
 
     @Override
     public void on(Context context) {
-        if (!context.inVoiceChannel()) {
-            context.reply("You must be in a voice channel!");
-            return;
-        }
         if (context.args.length == 0) {
             context.reply(usageResponse);
             return;

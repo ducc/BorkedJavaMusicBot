@@ -2,6 +2,7 @@ package ovh.not.javamusicbot.command;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import ovh.not.javamusicbot.Command;
+import ovh.not.javamusicbot.Middlewares;
 
 import java.util.List;
 
@@ -9,14 +10,11 @@ import java.util.List;
 public class ReorderCommand extends Command {
     public ReorderCommand() {
         super("reorder", "order");
+        use(Middlewares.MUST_BE_PLAYING);
     }
 
     @Override
     public void on(Context context) {
-        if (!context.server.isPlaying()) {
-            context.reply("No music is playing on this guild!");
-            return;
-        }
         if (context.args.length < 2) {
             context.reply("Usage: `!!!reorder <song number> <position>`\nExample: `!!!reorder 5 1` - moves song at "
                     + "position 5 in queue to position 1");

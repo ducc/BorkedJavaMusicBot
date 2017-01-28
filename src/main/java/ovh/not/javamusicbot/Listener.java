@@ -60,7 +60,7 @@ class Listener extends ListenerAdapter {
             }
             context.args = matches;
         }
-        command.on(context);
+        command.handle(context);
     }
 
     @Override
@@ -69,7 +69,7 @@ class Listener extends ListenerAdapter {
         System.out.println(String.format("Joined guild: %s - #%d", event.getGuild().getName(), guilds));
         TextChannel publicChannel = event.getGuild().getPublicChannel();
         if (publicChannel != null && publicChannel.canTalk()) {
-            publicChannel.sendMessage(config.join).complete();
+            publicChannel.sendMessage(config.join).queue();
         }
         if (config.dev) {
             return;

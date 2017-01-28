@@ -2,6 +2,7 @@ package ovh.not.javamusicbot.command;
 
 import net.dv8tion.jda.core.Permission;
 import ovh.not.javamusicbot.Command;
+import ovh.not.javamusicbot.Middlewares;
 import ovh.not.javamusicbot.impl.DiscordServer;
 import ovh.not.javamusicbot.lib.AlreadyConnectedException;
 import ovh.not.javamusicbot.lib.PermissionException;
@@ -11,14 +12,11 @@ import java.util.Set;
 public class PlayCommand extends Command {
     public PlayCommand() {
         super("play", "p");
+        use(Middlewares.MUST_BE_IN_VOICE_CHANNEL);
     }
 
     @Override
     public void on(Context context) {
-        if (!context.inVoiceChannel()) {
-            context.reply("You must be in a voice channel!");
-            return;
-        }
         if (context.args.length == 0) {
             context.reply("Usage: `!!!play <link>` - plays a song\n" +
                     "To search youtube, use `!!!play <youtube video title>`\n" +

@@ -44,7 +44,7 @@ public class AdminCommand extends Command {
         }
         Command command = subCommands.get(context.args[0]);
         context.args = Arrays.copyOfRange(context.args, 1, context.args.length);
-        command.on(context);
+        command.handle(context);
     }
 
     private class StopCommand extends Command {

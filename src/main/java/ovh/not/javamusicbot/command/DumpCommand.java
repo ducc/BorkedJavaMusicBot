@@ -6,6 +6,7 @@ import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.async.Callback;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import ovh.not.javamusicbot.Command;
+import ovh.not.javamusicbot.Middlewares;
 import ovh.not.javamusicbot.lib.song.Song;
 
 import java.util.ArrayList;
@@ -17,14 +18,11 @@ import static ovh.not.javamusicbot.Utils.HASTEBIN_URL;
 public class DumpCommand extends Command {
     public DumpCommand() {
         super("dump");
+        use(Middlewares.MUST_BE_PLAYING);
     }
 
     @Override
     public void on(Context context) {
-        if (!context.server.isPlaying()) {
-            context.reply("No music is playing on this guild!");
-            return;
-        }
         List<DumpItem> items = new ArrayList<>();
         Song current = context.server.getCurrentSong();
         items.add(new DumpItem(0, current.getSource(), current.getIdentifier()));

@@ -6,6 +6,7 @@ import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.async.Callback;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import ovh.not.javamusicbot.Command;
+import ovh.not.javamusicbot.Middlewares;
 import ovh.not.javamusicbot.Pageable;
 import ovh.not.javamusicbot.lib.song.QueueSong;
 import ovh.not.javamusicbot.lib.song.Song;
@@ -24,14 +25,11 @@ public class QueueCommand extends Command {
 
     public QueueCommand() {
         super("queue", "list", "q");
+        use(Middlewares.MUST_BE_PLAYING);
     }
 
     @Override
     public void on(Context context) {
-        if (!context.server.isPlaying()) {
-            context.reply("No music is queued or playing on this guild!");
-            return;
-        }
         Song playing = context.server.getCurrentSong();
         List<QueueSong> queue = (List<QueueSong>) context.server.getSongQueue().get();
         StringBuilder builder = new StringBuilder();

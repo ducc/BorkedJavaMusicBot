@@ -13,9 +13,12 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static ovh.not.javamusicbot.Utils.getPrivateChannel;
+
 public abstract class Command {
     private static final Pattern FLAG_PATTERN = Pattern.compile("\\s+-([a-zA-Z]+)");
     public final String[] names;
+    private final Set<Middlewares.Middleware> middlewares = new HashSet<>();
     public boolean hide = false;
 
     protected Command(String name, String... names) {
@@ -24,7 +27,20 @@ public abstract class Command {
         System.arraycopy(names, 0, this.names, 1, names.length);
     }
 
-    public abstract void on(Context context);
+    public void handle(Context context) {
+        for (Middlewares.Middleware middleware : middlewares) {
+            if (middleware.on(context)) {
+                return;
+            }
+        }
+        on(context);
+    }
+
+    public void use(Middlewares.Middleware middleware) {
+        middlewares.add(middleware);
+    }
+
+    protected abstract void on(Context context);
 
     protected class Context {
         public MessageReceivedEvent event;
@@ -36,10 +52,10 @@ public abstract class Command {
             try {
                 return event.getChannel().sendMessage(message).complete();
             } catch (PermissionException e) {
-                event.getAuthor().getPrivateChannel().sendMessage("**dabBot does not have permission to talk in the #"
+                getPrivateChannel(event.getAuthor()).sendMessage("**dabBot does not have permission to talk in the #"
                         + event.getTextChannel().getName() + " text channel.**\nTo fix this, allow dabBot to " +
                         "`Read Messages` and `Send Messages` in that text channel.\nIf you are not the guild " +
-                        "owner, please send this to them.").complete();
+                        "owner, please send this to them.").queue();
                 return null;
             }
         }
@@ -67,10 +83,10 @@ public abstract class Command {
         @SuppressWarnings("StatementWithEmptyBody")
         public void handleException(Exception e) {
             if (e instanceof PermissionException) {
-                event.getAuthor().getPrivateChannel().sendMessage("**dabBot does not have permission to connect to the "
+                getPrivateChannel(event.getAuthor()).sendMessage("**dabBot does not have permission to connect to the "
                         + getVoiceChannel().getName() + " voice channel.**\nTo fix this, allow dabBot to `Connect` " +
                         "and `Speak` in that voice channel.\nIf you are not the guild owner, please send " +
-                        "this to them.").complete();
+                        "this to them.").queue();
             } else if (e instanceof AlreadyConnectedException) {
             } else {
                 reply("An error occurred!");
@@ -78,4 +94,5 @@ public abstract class Command {
             }
         }
     }
+
 }

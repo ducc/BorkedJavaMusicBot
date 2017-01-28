@@ -3,6 +3,7 @@ package ovh.not.javamusicbot.command;
 import net.dv8tion.jda.core.Permission;
 import ovh.not.javamusicbot.Command;
 import ovh.not.javamusicbot.Constants;
+import ovh.not.javamusicbot.Middlewares;
 import ovh.not.javamusicbot.impl.DiscordServer;
 import ovh.not.javamusicbot.lib.AlreadyConnectedException;
 import ovh.not.javamusicbot.lib.PermissionException;
@@ -17,6 +18,7 @@ public class RadioCommand extends Command {
     public RadioCommand(Constants constants) {
         super("radio", "station", "stations", "fm");
         this.constants = constants;
+        use(Middlewares.MUST_BE_IN_VOICE_CHANNEL);
         StringBuilder builder = new StringBuilder("Streams a variety of UK radio stations.\n" +
                 "Usage: `!!!radio <station>`\n" +
                 "\n**Available stations:**\n");
@@ -33,10 +35,6 @@ public class RadioCommand extends Command {
 
     @Override
     public void on(Context context) {
-        if (!context.inVoiceChannel()) {
-            context.reply("You must be in a voice channel!");
-            return;
-        }
         if (context.args.length == 0) {
             context.reply(usageMessage);
             return;

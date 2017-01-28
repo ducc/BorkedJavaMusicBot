@@ -4,6 +4,7 @@ import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import ovh.not.javamusicbot.Command;
+import ovh.not.javamusicbot.Middlewares;
 import ovh.not.javamusicbot.impl.DiscordServer;
 import ovh.not.javamusicbot.lib.AlreadyConnectedException;
 import ovh.not.javamusicbot.lib.PermissionException;
@@ -13,14 +14,11 @@ import java.util.List;
 public class MoveCommand extends Command {
     public MoveCommand() {
         super("move");
+        use(Middlewares.MUST_BE_PLAYING);
     }
 
     @Override
     public void on(Context context) {
-        if (!context.server.isPlaying()) {
-            context.reply("No music is playing on this guild!");
-            return;
-        }
         if (context.server.isPlaying()
                 && !context.event.getMember().hasPermission(((DiscordServer) context.server).voiceChannel,
                 Permission.VOICE_MOVE_OTHERS)) {

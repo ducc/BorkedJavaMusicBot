@@ -1,5 +1,5 @@
-# JavaMusicBot
-The source code for dabBot
+# dabBot [![CircleCI](https://circleci.com/gh/sponges/dabBot.svg?style=svg)](https://circleci.com/gh/sponges/dabBot)
+A public discord music bot.
 
 ## Setup
 1. Compile using maven
