@@ -98,7 +98,7 @@ public class DiscordFMCommand extends Command {
             }
         }
         for (String song : songs) {
-            context.server.load(song);
+            context.server.load(song, context.user);
         }
     }
 

@@ -46,6 +46,6 @@ public class PlayCommand extends Command {
                 return;
             }
         }
-        context.server.load(String.join(" ", context.args));
+        context.server.load(String.join(" ", context.args), context.user);
     }
 }

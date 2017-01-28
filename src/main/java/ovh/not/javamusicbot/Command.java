@@ -6,6 +6,7 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 import ovh.not.javamusicbot.lib.AlreadyConnectedException;
 import ovh.not.javamusicbot.lib.server.Server;
+import ovh.not.javamusicbot.lib.user.User;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -28,6 +29,7 @@ public abstract class Command {
     protected class Context {
         public MessageReceivedEvent event;
         public Server server;
+        public User user;
         public String[] args;
 
         public Message reply(String message) {

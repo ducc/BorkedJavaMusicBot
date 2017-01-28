@@ -7,6 +7,7 @@ import com.mashape.unirest.http.async.Callback;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import ovh.not.javamusicbot.Command;
 import ovh.not.javamusicbot.Pageable;
+import ovh.not.javamusicbot.lib.song.QueueSong;
 import ovh.not.javamusicbot.lib.song.Song;
 
 import java.util.List;
@@ -32,7 +33,7 @@ public class QueueCommand extends Command {
             return;
         }
         Song playing = context.server.getCurrentSong();
-        List<Song> queue = (List<Song>) context.server.getSongQueue().get();
+        List<QueueSong> queue = (List<QueueSong>) context.server.getSongQueue().get();
         StringBuilder builder = new StringBuilder();
         if (context.args.length > 0 && context.args[0].equalsIgnoreCase("all")) {
             long durationTotal = playing.getDuration();
@@ -69,7 +70,7 @@ public class QueueCommand extends Command {
         } else {
             builder.append(String.format(CURRENT_LINE, playing.getTitle(), playing.getAuthor(),
                     formatDuration(playing.getPosition()) + "/" + formatDuration(playing.getDuration())));
-            Pageable<Song> pageable = new Pageable<>(queue);
+            Pageable<QueueSong> pageable = new Pageable<>(queue);
             pageable.setPageSize(PAGE_SIZE);
             if (context.args.length > 0) {
                 int page;

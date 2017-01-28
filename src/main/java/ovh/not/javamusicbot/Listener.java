@@ -21,13 +21,15 @@ class Listener extends ListenerAdapter {
     private final Config config;
     private final CommandManager commandManager;
     private final ServerManager serverManager;
+    private final UserManager userManager;
     private final Pattern commandPattern;
 
-    Listener(Config config, CommandManager commandManager, ServerManager serverManager) {
+    Listener(Config config, CommandManager commandManager, ServerManager serverManager, UserManager userManager) {
         this.config = config;
         this.commandManager = commandManager;
         this.commandPattern = Pattern.compile(config.regex);
         this.serverManager = serverManager;
+        this.userManager = userManager;
     }
 
     @Override
@@ -50,6 +52,7 @@ class Listener extends ListenerAdapter {
         Command.Context context = command.new Context();
         context.event = event;
         context.server = serverManager.get(event.getGuild());
+        context.user = userManager.get(event.getAuthor());
         if (matcher.groupCount() > 1) {
             String[] matches = matcher.group(2).split("\\s+");
             if (matches.length > 0 && matches[0].equals("")) {

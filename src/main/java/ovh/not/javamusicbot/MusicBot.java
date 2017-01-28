@@ -50,11 +50,12 @@ public final class MusicBot {
         AudioSourceManagers.registerRemoteSources(audioPlayerManager);
         CommandManager commandManager = new CommandManager(config, constants);
         ServerManager serverManager = new ServerManager(audioPlayerManager);
+        UserManager userManager = new UserManager();
         JDA jda;
         try {
             JDABuilder builder = new JDABuilder(AccountType.BOT)
                     .setToken(config.token)
-                    .addListener(new Listener(config, commandManager, serverManager));
+                    .addListener(new Listener(config, commandManager, serverManager, userManager));
             if (sharding) {
                 builder.useSharding(shard, shardCount);
             }

@@ -10,6 +10,10 @@ interface MusicController extends ServerController {
 
     void load(String song, User addedBy, Date dateAdded);
 
+    default void load(String song, User addedBy) {
+        load(song, addedBy, new Date());
+    }
+
     void stop();
 
     void pause();

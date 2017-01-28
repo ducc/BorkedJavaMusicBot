@@ -72,6 +72,6 @@ public class RadioCommand extends Command {
                 return;
             }
         }
-        context.server.load(url);
+        context.server.load(url, context.user);
     }
 }
