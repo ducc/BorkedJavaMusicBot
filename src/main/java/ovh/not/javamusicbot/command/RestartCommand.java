@@ -1,7 +1,7 @@
 package ovh.not.javamusicbot.command;
 
 import ovh.not.javamusicbot.Command;
-import ovh.not.javamusicbot.lib.Song;
+import ovh.not.javamusicbot.lib.song.Song;
 
 import static ovh.not.javamusicbot.Utils.formatDuration;
 

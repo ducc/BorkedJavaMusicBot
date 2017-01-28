@@ -10,7 +10,7 @@ import net.dv8tion.jda.core.events.guild.GuildLeaveEvent;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import org.json.JSONObject;
-import ovh.not.javamusicbot.lib.Server;
+import ovh.not.javamusicbot.lib.server.Server;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

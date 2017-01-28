@@ -10,18 +10,25 @@ import net.dv8tion.jda.core.audio.AudioSendHandler;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.managers.AudioManager;
-import ovh.not.javamusicbot.lib.*;
+import ovh.not.javamusicbot.lib.AlreadyConnectedException;
+import ovh.not.javamusicbot.lib.PermissionException;
+import ovh.not.javamusicbot.lib.server.Server;
+import ovh.not.javamusicbot.lib.server.ServerProperty;
+import ovh.not.javamusicbot.lib.song.QueueSong;
+import ovh.not.javamusicbot.lib.song.SongQueue;
+import ovh.not.javamusicbot.lib.user.User;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 
 public class DiscordServer extends AudioEventAdapter implements Server {
-    private final SongQueue songQueue = new DiscordSongQueue();
+    private final SongQueue songQueue = new DiscordSongQueue(this);
     private final Collection<ServerProperty> serverProperties = new ArrayList<>();
     private final Guild guild;
     private final AudioPlayerManager audioPlayerManager;
     private final AudioPlayer audioPlayer;
-    private final DiscordResultHandler resultHandler;
+    private final User user;
     private boolean playing = false;
     private boolean paused = false;
     public VoiceChannel voiceChannel = null;
@@ -33,12 +40,12 @@ public class DiscordServer extends AudioEventAdapter implements Server {
         audioPlayer.addListener(this);
         AudioSendHandler audioSendHandler = new AudioPlayerSendHandler(audioPlayer);
         guild.getAudioManager().setSendingHandler(audioSendHandler);
-        resultHandler = new DiscordResultHandler(this);
+        user = new DiscordUser(guild.getOwner().getUser().getId());
     }
 
     @Override
-    public void play(Song song) {
-        if (audioPlayer.startTrack(((DiscordSong) song).audioTrack, true)) {
+    public void play(QueueSong song) {
+        if (audioPlayer.startTrack(((DiscordQueueSong) song).audioTrack, true)) {
             ((DiscordSongQueue) songQueue).current = song;
         } else {
             songQueue.add(song);
@@ -46,7 +53,8 @@ public class DiscordServer extends AudioEventAdapter implements Server {
     }
 
     @Override
-    public void load(String song) {
+    public void load(String song, User addedBy, Date dateAdded) {
+        DiscordResultHandler resultHandler = new DiscordResultHandler(this, addedBy, dateAdded);
         audioPlayerManager.loadItem(song, resultHandler);
     }
 
@@ -86,7 +94,7 @@ public class DiscordServer extends AudioEventAdapter implements Server {
     }
 
     @Override
-    public Song getCurrentSong() {
+    public QueueSong getCurrentSong() {
         return songQueue.getCurrentSong();
     }
 
@@ -156,5 +164,15 @@ public class DiscordServer extends AudioEventAdapter implements Server {
     @Override
     public SongQueue getSongQueue() {
         return songQueue;
+    }
+
+    @Override
+    public String getId() {
+        return guild.getId();
+    }
+
+    @Override
+    public User getOwner() {
+        return user;
     }
 }

@@ -5,7 +5,7 @@ import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 import ovh.not.javamusicbot.lib.AlreadyConnectedException;
-import ovh.not.javamusicbot.lib.Server;
+import ovh.not.javamusicbot.lib.server.Server;
 
 import java.util.HashSet;
 import java.util.Set;

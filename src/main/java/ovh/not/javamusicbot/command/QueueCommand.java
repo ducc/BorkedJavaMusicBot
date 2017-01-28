@@ -7,7 +7,7 @@ import com.mashape.unirest.http.async.Callback;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import ovh.not.javamusicbot.Command;
 import ovh.not.javamusicbot.Pageable;
-import ovh.not.javamusicbot.lib.Song;
+import ovh.not.javamusicbot.lib.song.Song;
 
 import java.util.List;
 

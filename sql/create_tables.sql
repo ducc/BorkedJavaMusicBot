@@ -1,16 +1,17 @@
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
   id TEXT PRIMARY KEY NOT NULL
 );
 
-CREATE TABLE servers (
+CREATE TABLE IF NOT EXISTS servers (
   id TEXT PRIMARY KEY NOT NULL,
   owner_id TEXT NOT NULL,
+  voice_channel TEXT DEFAULT NULL,
   FOREIGN KEY (owner_id) REFERENCES users(id)
     ON UPDATE CASCADE
     ON DELETE CASCADE
 );
 
-CREATE TABLE server_properties (
+CREATE TABLE IF NOT EXISTS server_properties (
   server_id TEXT NOT NULL,
   property  TEXT NOT NULL,
   value     TEXT DEFAULT NULL,
@@ -19,7 +20,7 @@ CREATE TABLE server_properties (
     ON DELETE CASCADE
 );
 
-CREATE TABLE server_permissions (
+CREATE TABLE IF NOT EXISTS server_permissions (
   server_id   TEXT NOT NULL,
   role        TEXT NOT NULL,
   permissions BIT VARYING,
@@ -28,18 +29,18 @@ CREATE TABLE server_permissions (
     ON DELETE CASCADE
 );
 
-CREATE TABLE songs (
-  id       BIGSERIAL PRIMARY KEY NOT NULL,
-  source   TEXT NOT NULL,
-  title    TEXT NOT NULL,
-  author   TEXT NOT NULL,
-  duration BIGINT
+CREATE TABLE IF NOT EXISTS songs (
+  id         BIGSERIAL PRIMARY KEY NOT NULL,
+  source     TEXT NOT NULL,
+  identifier TEXT NOT NULL,
+  title      TEXT NOT NULL,
+  author     TEXT NOT NULL,
+  duration   BIGINT
 );
 
-CREATE TABLE queues (
+CREATE TABLE IF NOT EXISTS queues (
   id            BIGSERIAL PRIMARY KEY NOT NULL,
   server_id     TEXT NOT NULL,
-  voice_channel TEXT NOT NULL,
   current_song  BIGSERIAL NOT NULL,
   FOREIGN KEY (server_id) REFERENCES servers(id)
     ON UPDATE CASCADE
@@ -49,7 +50,7 @@ CREATE TABLE queues (
     ON DELETE CASCADE
 );
 
-CREATE TABLE queue_songs (
+CREATE TABLE IF NOT EXISTS queue_songs (
   queue_id   BIGSERIAL NOT NULL,
   song_id    BIGSERIAL NOT NULL,
   added_by   TEXT NOT NULL,
@@ -65,18 +66,17 @@ CREATE TABLE queue_songs (
     ON DELETE CASCADE
 );
 
-CREATE TABLE playlists (
+CREATE TABLE IF NOT EXISTS playlists (
   id           BIGSERIAL PRIMARY KEY NOT NULL,
   owner_id     TEXT NOT NULL,
   name         TEXT NOT NULL,
-  description  TEXT DEFAULT NULL,
   date_created TIMESTAMP NOT NULL,
   FOREIGN KEY (owner_id) REFERENCES users(id)
     ON UPDATE CASCADE
     ON DELETE CASCADE
 );
 
-CREATE TABLE playlist_songs (
+CREATE TABLE IF NOT EXISTS playlist_songs (
   playlist_id BIGSERIAL NOT NULL,
   song_id     BIGSERIAL NOT NULL,
   added_by    TEXT NOT NULL,

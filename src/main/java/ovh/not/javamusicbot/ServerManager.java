@@ -3,7 +3,7 @@ package ovh.not.javamusicbot;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import net.dv8tion.jda.core.entities.Guild;
 import ovh.not.javamusicbot.impl.DiscordServer;
-import ovh.not.javamusicbot.lib.Server;
+import ovh.not.javamusicbot.lib.server.Server;
 
 import java.util.HashMap;
 import java.util.Map;

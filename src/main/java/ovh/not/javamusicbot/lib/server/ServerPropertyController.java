@@ -1,4 +1,4 @@
-package ovh.not.javamusicbot.lib;
+package ovh.not.javamusicbot.lib.server;
 
 import java.util.Collection;
 

@@ -1,13 +1,20 @@
 package ovh.not.javamusicbot.impl;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import ovh.not.javamusicbot.lib.Song;
+import ovh.not.javamusicbot.lib.song.Song;
 
-class DiscordSong implements Song {
+abstract class DiscordSong implements Song {
+    private final String id;
     final AudioTrack audioTrack;
 
     DiscordSong(AudioTrack audioTrack) {
+        this.id = null; // TODO sql insert
         this.audioTrack = audioTrack;
+    }
+
+    @Override
+    public String getId() {
+        return id;
     }
 
     @Override

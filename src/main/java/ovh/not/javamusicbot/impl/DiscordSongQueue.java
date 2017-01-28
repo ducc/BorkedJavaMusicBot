@@ -1,28 +1,37 @@
 package ovh.not.javamusicbot.impl;
 
-import ovh.not.javamusicbot.lib.Song;
-import ovh.not.javamusicbot.lib.SongQueue;
+import ovh.not.javamusicbot.lib.server.Server;
+import ovh.not.javamusicbot.lib.song.QueueSong;
+import ovh.not.javamusicbot.lib.song.SongQueue;
 
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Queue;
 
 class DiscordSongQueue implements SongQueue {
-    private final Queue<Song> queue = new LinkedList<>();
-    Song current = null;
+    private final Queue<QueueSong> queue = new LinkedList<>();
+    private final String id;
+    private final Server server;
+
+    QueueSong current = null;
+
+    DiscordSongQueue(Server server) {
+        this.server = server;
+        id = null; // TODO sql insert
+    }
 
     @Override
-    public Collection<Song> get() {
+    public Collection<QueueSong> get() {
         return queue;
     }
 
     @Override
-    public void add(Song song) {
+    public void add(QueueSong song) {
         queue.add(song);
     }
 
     @Override
-    public Song next() {
+    public QueueSong next() {
         if (queue.isEmpty()) {
             return null;
         }
@@ -41,7 +50,17 @@ class DiscordSongQueue implements SongQueue {
     }
 
     @Override
-    public Song getCurrentSong() {
+    public String getId() {
+        return id;
+    }
+
+    @Override
+    public Server getServer() {
+        return server;
+    }
+
+    @Override
+    public QueueSong getCurrentSong() {
         return current;
     }
 }
