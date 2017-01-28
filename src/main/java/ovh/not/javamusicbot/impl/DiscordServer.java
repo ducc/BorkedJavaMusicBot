@@ -10,6 +10,10 @@ import net.dv8tion.jda.core.audio.AudioSendHandler;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.managers.AudioManager;
+import org.json.JSONObject;
+import ovh.not.javamusicbot.Database;
+import ovh.not.javamusicbot.Statement;
+import ovh.not.javamusicbot.UserManager;
 import ovh.not.javamusicbot.lib.AlreadyConnectedException;
 import ovh.not.javamusicbot.lib.PermissionException;
 import ovh.not.javamusicbot.lib.server.Server;
@@ -18,6 +22,10 @@ import ovh.not.javamusicbot.lib.song.QueueSong;
 import ovh.not.javamusicbot.lib.song.SongQueue;
 import ovh.not.javamusicbot.lib.user.User;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -25,22 +33,60 @@ import java.util.Date;
 public class DiscordServer extends AudioEventAdapter implements Server {
     private final SongQueue songQueue = new DiscordSongQueue(this);
     private final Collection<ServerProperty> serverProperties = new ArrayList<>();
+    private final Database database;
+    private final UserManager userManager;
     private final Guild guild;
     private final AudioPlayerManager audioPlayerManager;
     private final AudioPlayer audioPlayer;
-    private final User user;
+    private final User owner;
     private boolean playing = false;
     private boolean paused = false;
     public VoiceChannel voiceChannel = null;
 
-    public DiscordServer(Guild guild, AudioPlayerManager audioPlayerManager) {
+    public DiscordServer(Database database, UserManager userManager, Guild guild, AudioPlayerManager audioPlayerManager) throws SQLException {
+        this.database = database;
+        this.userManager = userManager;
         this.guild = guild;
         this.audioPlayerManager = audioPlayerManager;
         audioPlayer = audioPlayerManager.createPlayer();
         audioPlayer.addListener(this);
         AudioSendHandler audioSendHandler = new AudioPlayerSendHandler(audioPlayer);
         guild.getAudioManager().setSendingHandler(audioSendHandler);
-        user = new DiscordUser(guild.getOwner().getUser().getId());
+        owner = userManager.get(guild.getOwner().getUser());
+        init();
+        initProperties();
+    }
+
+    private void init() throws SQLException {
+        try (Connection connection = database.dataSource.getConnection()) {
+            PreparedStatement statement = database.prepare(connection, Statement.SERVER_EXISTS);
+            statement.setString(1, getId());
+            ResultSet resultSet = statement.executeQuery();
+            if (!resultSet.isBeforeFirst()) {
+                statement = database.prepare(connection, Statement.SERVER_INSERT);
+                statement.setString(1, getId());
+                statement.setString(2, owner.getId());
+                statement.execute();
+            }
+            resultSet.close();
+        }
+    }
+
+    private void initProperties() throws SQLException {
+        try (Connection connection = database.dataSource.getConnection()) {
+            PreparedStatement statement = database.prepare(connection, Statement.SERVER_PROPERTIES_SELECT_ALL);
+            statement.setString(1, getId());
+            ResultSet resultSet = statement.executeQuery();
+            if (!resultSet.isBeforeFirst()) {
+                return;
+            }
+            while (resultSet.next()) {
+                String property = resultSet.getString(1);
+                String value = resultSet.getString(2);
+                serverProperties.add(new ServerProperty(property, new JSONObject(value)));
+            }
+            resultSet.close();
+        }
     }
 
     @Override
@@ -177,6 +223,6 @@ public class DiscordServer extends AudioEventAdapter implements Server {
 
     @Override
     public User getOwner() {
-        return user;
+        return owner;
     }
 }

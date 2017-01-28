@@ -5,7 +5,7 @@ A public discord music bot.
 1. Compile using maven
 
         mvn clean package        
-2. Create `config.toml`
+1. Create `config.toml`
 
         dev    = true if development instance
         token  = "Bot application token"
@@ -18,39 +18,20 @@ A public discord music bot.
         carbon = "carbonitex.net api key"
         dbots  = "bots.discord.pw api key"
     Sample pattern: `^\\?([a-zA-Z]+)(?:\\s+)?(.*)?` - for `?` as the prefix.
-3. Run the bot
+1. Create `hikari.properties`
+
+        dataSourceClassName=org.postgresql.ds.PGSimpleDataSource
+        dataSource.user=
+        dataSource.password=
+        dataSource.databaseName=
+        dataSource.portNumber=
+        dataSource.serverName=
+1. Run the bot
 
         java -jar target/JavaMusicBot.jar
 
 ## Dependencies
 Dependencies are managed by Maven. See the maven [pom.xml](https://github.com/sponges/JavaMusicBot/blob/master/pom.xml) file.
-```xml
-<dependency>
-    <groupId>net.dv8tion</groupId>
-    <artifactId>JDA</artifactId>
-    <version>3.0.BETA2_122</version>
-</dependency>
-<dependency>
-    <groupId>com.sedmelluq</groupId>
-    <artifactId>lavaplayer</artifactId>
-    <version>1.1.42</version>
-</dependency>
-<dependency>
-    <groupId>com.moandjiezana.toml</groupId>
-    <artifactId>toml4j</artifactId>
-    <version>0.7.1</version>
-</dependency>
-<dependency>
-    <groupId>com.mashape.unirest</groupId>
-    <artifactId>unirest-java</artifactId>
-    <version>1.4.9</version>
-</dependency>
-<dependency>
-    <groupId>org.apache.commons</groupId>
-    <artifactId>commons-lang3</artifactId>
-    <version>3.5</version>
-</dependency>
-```
 
 ## License
 Licensed under Creative Commons Attribution NonCommercial (CC-BY-NC). See the `LICENSE` file in the root directory for 

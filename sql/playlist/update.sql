@@ -1,1 +1,1 @@
-UPDATE playlists SET name=$1 WHERE id=$2;
+UPDATE playlists SET name=? WHERE id=?;

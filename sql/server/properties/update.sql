@@ -1,1 +1,1 @@
-UPDATE server_properties SET value=$1 WHERE server_id=$2 AND property=$3;
+UPDATE server_properties SET value=? WHERE server_id=? AND property=?;

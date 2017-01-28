@@ -1,1 +1,1 @@
-INSERT INTO server_permissions (server_id, role, permissions) VALUES ($1, $2, $3);
+INSERT INTO server_permissions (server_id, role, permissions) VALUES (?, ?, ?);

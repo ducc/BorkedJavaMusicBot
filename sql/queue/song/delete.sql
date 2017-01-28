@@ -1,1 +1,1 @@
-DELETE FROM queue_songs WHERE server_id=$1 AND song_id=$2;
+DELETE FROM queue_songs WHERE server_id=? AND song_id=?;

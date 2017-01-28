@@ -1,1 +1,1 @@
-DELETE FROM servers WHERE id=$1;
+DELETE FROM servers WHERE id=?;

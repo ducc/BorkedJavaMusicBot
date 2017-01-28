@@ -1,1 +1,1 @@
-UPDATE servers SET owner_id=$1 WHERE id=$2;
+UPDATE servers SET owner_id=? WHERE id=?;

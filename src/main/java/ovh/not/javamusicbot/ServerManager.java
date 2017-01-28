@@ -5,20 +5,31 @@ import net.dv8tion.jda.core.entities.Guild;
 import ovh.not.javamusicbot.impl.DiscordServer;
 import ovh.not.javamusicbot.lib.server.Server;
 
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
 class ServerManager {
     final Map<Guild, Server> servers = new HashMap<>();
+    private final Database database;
+    private final UserManager userManager;
     private final AudioPlayerManager audioPlayerManager;
 
-    ServerManager(AudioPlayerManager audioPlayerManager) {
+    ServerManager(Database database, UserManager userManager, AudioPlayerManager audioPlayerManager) {
+        this.database = database;
+        this.userManager = userManager;
         this.audioPlayerManager = audioPlayerManager;
     }
 
     Server get(Guild guild) {
         if (!servers.containsKey(guild)) {
-            Server server = new DiscordServer(guild, audioPlayerManager);
+            Server server;
+            try {
+                server = new DiscordServer(database, userManager, guild, audioPlayerManager);
+            } catch (SQLException e) {
+                e.printStackTrace();
+                return null;
+            }
             servers.put(guild, server);
             return server;
         }

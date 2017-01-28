@@ -1,1 +1,1 @@
-DELETE FROM queues WHERE id=$1;
+DELETE FROM queues WHERE id=?;

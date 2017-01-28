@@ -1,1 +1,1 @@
-DELETE FROM server_properties WHERE server_id=$1 AND property=$2;
+DELETE FROM server_properties WHERE server_id=? AND property=?;

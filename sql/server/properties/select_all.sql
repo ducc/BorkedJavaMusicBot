@@ -1,0 +1,1 @@
+SELECT property, value FROM server_properties WHERE server_id=?;

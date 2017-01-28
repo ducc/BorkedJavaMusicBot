@@ -1,1 +1,1 @@
-INSERT INTO playlists (owner_id, name, date_created) VALUES ($1, $2, $3) RETURNING id;
+INSERT INTO playlists (owner_id, name, date_created) VALUES (?, ?, ?) RETURNING id;

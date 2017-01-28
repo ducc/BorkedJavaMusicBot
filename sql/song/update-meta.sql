@@ -1,1 +1,0 @@
-UPDATE songs SET title=$1, author=$2, duration=$3 WHERE id=$4;

@@ -12,6 +12,7 @@ import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import org.json.JSONObject;
 import ovh.not.javamusicbot.lib.server.Server;
 
+import java.sql.SQLException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -52,7 +53,13 @@ class Listener extends ListenerAdapter {
         Command.Context context = command.new Context();
         context.event = event;
         context.server = serverManager.get(event.getGuild());
-        context.user = userManager.get(event.getAuthor());
+        try {
+            context.user = userManager.get(event.getAuthor());
+        } catch (SQLException e) {
+            event.getTextChannel().sendMessage("An error occurred!").queue();
+            e.printStackTrace();
+            return;
+        }
         if (matcher.groupCount() > 1) {
             String[] matches = matcher.group(2).split("\\s+");
             if (matches.length > 0 && matches[0].equals("")) {

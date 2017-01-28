@@ -1,1 +1,1 @@
-UPDATE servers SET voice_channel=$1 WHERE id=$2;
+UPDATE servers SET voice_channel=? WHERE id=?;

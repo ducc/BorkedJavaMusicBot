@@ -1,1 +1,1 @@
-INSERT INTO queues (server_id) VALUES ($1);
+INSERT INTO queues (server_id) VALUES (?);

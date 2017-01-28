@@ -1,1 +1,1 @@
-INSERT INTO servers (id, owner_id) VALUES ($1, $2);
+INSERT INTO servers (id, owner_id) VALUES (?, ?);

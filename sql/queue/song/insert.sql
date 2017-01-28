@@ -1,1 +1,1 @@
-INSERT INTO queue_songs (server_id, song_id, added_by, date_added) VALUES ($1, $2, $3, $4);
+INSERT INTO queue_songs (server_id, song_id, added_by, date_added) VALUES (?, ?, ?, ?);
