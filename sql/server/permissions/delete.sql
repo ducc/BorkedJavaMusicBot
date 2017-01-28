@@ -1,0 +1,1 @@
+DELETE FROM server_permissions WHERE server_id=$1 AND role=$2;

@@ -5,6 +5,8 @@ import com.moandjiezana.toml.Toml;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
@@ -29,8 +31,9 @@ public final class MusicBot {
         Config config = new Toml().read(new File(CONFIG_PATH)).to(Config.class);
         Constants constants = new Toml().read(new File(CONSTANTS_PATH))
                 .to(Constants.class);
+        HikariConfig hikariConfig = new HikariConfig("hikari.properties");
         if (args.length == 0) {
-            JDA jda = setup(config, constants, false, 0, 0);
+            JDA jda = setup(config, constants, hikariConfig, false, 0, 0);
             JDA_INSTANCES.add(jda);
             return;
         }
@@ -39,13 +42,14 @@ public final class MusicBot {
         int maxShard = Integer.parseInt(args[2]);
         for (int shard = minShard; shard < maxShard + 1;) {
             System.out.println("Starting shard " + shard + "...");
-            JDA jda = setup(config, constants, true, shard, shardCount);
+            JDA jda = setup(config, constants, hikariConfig, true, shard, shardCount);
             JDA_INSTANCES.add(jda);
             shard++;
         }
     }
 
-    private static JDA setup(Config config, Constants constants, boolean sharding, int shard, int shardCount) {
+    private static JDA setup(Config config, Constants constants, HikariConfig hikariConfig, boolean sharding, int shard, int shardCount) {
+        HikariDataSource dataSource = new HikariDataSource(hikariConfig);
         AudioPlayerManager audioPlayerManager = new DefaultAudioPlayerManager();
         AudioSourceManagers.registerRemoteSources(audioPlayerManager);
         CommandManager commandManager = new CommandManager(config, constants);

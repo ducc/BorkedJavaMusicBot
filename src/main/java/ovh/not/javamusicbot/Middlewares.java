@@ -2,7 +2,6 @@ package ovh.not.javamusicbot;
 
 public abstract class Middlewares {
     interface Middleware {
-        // return true to cancel execution
         boolean on(Command.Context context);
     }
 

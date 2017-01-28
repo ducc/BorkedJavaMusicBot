@@ -1,0 +1,1 @@
+UPDATE server_permissions SET permissions=$1 WHERE server_id=$2 AND role=$3;

@@ -1,0 +1,1 @@
+UPDATE servers SET voice_channel=$1 WHERE id=$2;

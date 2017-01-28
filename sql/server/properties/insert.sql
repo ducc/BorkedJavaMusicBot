@@ -1,0 +1,1 @@
+INSERT INTO server_properties (server_id, property, value) VALUES ($1, $2, $3);

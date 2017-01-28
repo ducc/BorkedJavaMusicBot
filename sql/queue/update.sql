@@ -1,0 +1,1 @@
+UPDATE queues SET current_song=$1 WHERE server_id=$2;

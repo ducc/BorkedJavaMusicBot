@@ -1,0 +1,1 @@
+UPDATE server_properties SET value=$1 WHERE server_id=$2 AND property=$3;

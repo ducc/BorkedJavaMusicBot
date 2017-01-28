@@ -39,9 +39,8 @@ CREATE TABLE IF NOT EXISTS songs (
 );
 
 CREATE TABLE IF NOT EXISTS queues (
-  id            BIGSERIAL PRIMARY KEY NOT NULL,
   server_id     TEXT NOT NULL,
-  current_song  BIGSERIAL NOT NULL,
+  current_song  BIGINT DEFAULT NULL,
   FOREIGN KEY (server_id) REFERENCES servers(id)
     ON UPDATE CASCADE
     ON DELETE CASCADE,
@@ -51,11 +50,11 @@ CREATE TABLE IF NOT EXISTS queues (
 );
 
 CREATE TABLE IF NOT EXISTS queue_songs (
-  queue_id   BIGSERIAL NOT NULL,
-  song_id    BIGSERIAL NOT NULL,
+  server_id  TEXT NOT NULL,
+  song_id    BIGINT NOT NULL,
   added_by   TEXT NOT NULL,
   date_added TIMESTAMP NOT NULL,
-  FOREIGN KEY (queue_id) REFERENCES queues(id)
+  FOREIGN KEY (server_id) REFERENCES servers(id)
     ON UPDATE CASCADE
     ON DELETE CASCADE,
   FOREIGN KEY (song_id) REFERENCES songs(id)
@@ -77,8 +76,8 @@ CREATE TABLE IF NOT EXISTS playlists (
 );
 
 CREATE TABLE IF NOT EXISTS playlist_songs (
-  playlist_id BIGSERIAL NOT NULL,
-  song_id     BIGSERIAL NOT NULL,
+  playlist_id BIGINT NOT NULL,
+  song_id     BIGINT NOT NULL,
   added_by    TEXT NOT NULL,
   date_added  TIMESTAMP NOT NULL,
   FOREIGN KEY (playlist_id) REFERENCES playlists(id)
