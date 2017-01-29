@@ -36,7 +36,6 @@ public class PlayCommand extends Command {
         if (flags.contains("first") || flags.contains("f")) {
             // TODO handler.setFirstInQueue = true;
         }
-        System.out.println("connected? " + context.server.isConnected());
         if (!context.server.isConnected()) {
             try {
                 context.server.connect(context.getVoiceChannel());

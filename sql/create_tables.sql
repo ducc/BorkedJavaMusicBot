@@ -40,11 +40,8 @@ CREATE TABLE IF NOT EXISTS songs (
 
 CREATE TABLE IF NOT EXISTS queues (
   server_id     TEXT NOT NULL,
-  current_song  BIGINT DEFAULT NULL,
+  songs         BIGINT ARRAY DEFAULT NULL,
   FOREIGN KEY (server_id) REFERENCES servers(id)
-    ON UPDATE CASCADE
-    ON DELETE CASCADE,
-  FOREIGN KEY (current_song) REFERENCES songs(id)
     ON UPDATE CASCADE
     ON DELETE CASCADE
 );

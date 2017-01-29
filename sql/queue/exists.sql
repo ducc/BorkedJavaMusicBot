@@ -1,0 +1,1 @@
+SELECT 1 FROM queues WHERE server_id=?;

@@ -1,1 +1,1 @@
-UPDATE queues SET current_song=? WHERE server_id=?;
+UPDATE queues SET current_song=?, songs=? WHERE server_id=?;

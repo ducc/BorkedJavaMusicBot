@@ -1,7 +1,7 @@
 package ovh.not.javamusicbot.lib.song;
 
 interface SongInfo {
-    String getId();
+    int getId();
 
     String getSource();
 

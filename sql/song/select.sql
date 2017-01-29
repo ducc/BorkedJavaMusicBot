@@ -1,0 +1,1 @@
+SELECT id, title, author, duration FROM songs WHERE source=? AND identifier=?;

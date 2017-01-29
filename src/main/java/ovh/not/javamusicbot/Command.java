@@ -82,7 +82,7 @@ public abstract class Command {
 
         @SuppressWarnings("StatementWithEmptyBody")
         public void handleException(Exception e) {
-            if (e instanceof PermissionException) {
+            if (e instanceof PermissionException || e instanceof ovh.not.javamusicbot.lib.PermissionException) {
                 getPrivateChannel(event.getAuthor()).sendMessage("**dabBot does not have permission to connect to the "
                         + getVoiceChannel().getName() + " voice channel.**\nTo fix this, allow dabBot to `Connect` " +
                         "and `Speak` in that voice channel.\nIf you are not the guild owner, please send " +

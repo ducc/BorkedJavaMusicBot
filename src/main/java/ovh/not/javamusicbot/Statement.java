@@ -28,12 +28,15 @@ public enum Statement {
     SONG_INSERT("song/insert"),
     SONG_DELETE("song/delete"),
     SONG_UPDATE("song/update"),
+    SONG_SELECT("song/select"),
 
     QUEUE_INSERT("queue/insert"),
+    QUEUE_EXISTS("queue/exists"),
     QUEUE_DELETE("queue/delete"),
     QUEUE_UPDATE("queue/update"),
 
     QUEUE_SONGS_INSERT("queue/song/insert"),
+    QUEUE_SONGS_EXISTS("queue/song/exists"),
     QUEUE_SONGS_DELETE("queue/song/delete"),
 
     PLAYLIST_INSERT("playlist/insert"),

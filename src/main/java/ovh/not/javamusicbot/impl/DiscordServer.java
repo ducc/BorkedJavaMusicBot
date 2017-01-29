@@ -32,9 +32,9 @@ import java.util.Collection;
 import java.util.Date;
 
 public class DiscordServer extends AudioEventAdapter implements Server {
-    private final SongQueue songQueue = new DiscordSongQueue(this);
     private final Collection<ServerProperty> serverProperties = new ArrayList<>();
     private final Database database;
+    private final SongQueue songQueue;
     private final UserManager userManager;
     private final Guild guild;
     private final AudioPlayerManager audioPlayerManager;
@@ -56,6 +56,7 @@ public class DiscordServer extends AudioEventAdapter implements Server {
         owner = userManager.get(guild.getOwner().getUser());
         init();
         initProperties();
+        songQueue = new DiscordSongQueue(database, this);
     }
 
     private void init() throws SQLException {
@@ -101,7 +102,7 @@ public class DiscordServer extends AudioEventAdapter implements Server {
 
     @Override
     public void load(String song, User addedBy, Date dateAdded) {
-        DiscordResultHandler resultHandler = new DiscordResultHandler(this, addedBy, dateAdded);
+        DiscordResultHandler resultHandler = new DiscordResultHandler(database, this, addedBy, dateAdded);
         audioPlayerManager.loadItem(song, resultHandler);
     }
 
