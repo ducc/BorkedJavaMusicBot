@@ -6,6 +6,7 @@ import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
+import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.audio.AudioSendHandler;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.VoiceChannel;
@@ -107,6 +108,7 @@ public class DiscordServer extends AudioEventAdapter implements Server {
     @Override
     public void stop() {
         audioPlayer.stopTrack();
+        audioPlayer.destroy();
         playing = false;
         paused = false;
     }
@@ -152,6 +154,9 @@ public class DiscordServer extends AudioEventAdapter implements Server {
     public void connect(VoiceChannel voiceChannel) throws AlreadyConnectedException, PermissionException {
         if (guild.getAudioManager().isConnected()) {
             throw new AlreadyConnectedException();
+        }
+        if (!guild.getSelfMember().hasPermission(voiceChannel, Permission.VOICE_CONNECT)) {
+            throw new PermissionException();
         }
         try {
             AudioManager audioManager = guild.getAudioManager();

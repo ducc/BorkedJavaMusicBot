@@ -70,6 +70,7 @@ public final class MusicBot {
         try {
             JDABuilder builder = new JDABuilder(AccountType.BOT)
                     .setToken(config.token)
+                    .setAudioEnabled(true)
                     .addListener(new Listener(config, commandManager, serverManager, userManager));
             if (sharding) {
                 builder.useSharding(shard, shardCount);
