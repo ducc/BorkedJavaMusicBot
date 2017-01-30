@@ -74,6 +74,14 @@ public class DiscordServer extends AudioEventAdapter implements Server {
         }
     }
 
+    public void delete() throws SQLException {
+        try (Connection connection = database.dataSource.getConnection()) {
+            PreparedStatement statement = database.prepare(connection, Statement.SERVER_DELETE);
+            statement.setString(1, getId());
+            statement.execute();
+        }
+    }
+
     private void initProperties() throws SQLException {
         try (Connection connection = database.dataSource.getConnection()) {
             PreparedStatement statement = database.prepare(connection, Statement.SERVER_PROPERTIES_SELECT_ALL);
@@ -94,7 +102,7 @@ public class DiscordServer extends AudioEventAdapter implements Server {
     @Override
     public void play(QueueSong song) {
         if (audioPlayer.startTrack(((DiscordQueueSong) song).audioTrack, true)) {
-            ((DiscordSongQueue) songQueue).current = song;
+            ((DiscordSongQueue) songQueue).setCurrent(song);
         } else {
             songQueue.add(song);
         }
@@ -110,6 +118,7 @@ public class DiscordServer extends AudioEventAdapter implements Server {
     public void stop() {
         audioPlayer.stopTrack();
         audioPlayer.destroy();
+        ((DiscordSongQueue) songQueue).setCurrent(null);
         playing = false;
         paused = false;
     }

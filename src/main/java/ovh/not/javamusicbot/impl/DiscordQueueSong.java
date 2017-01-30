@@ -44,6 +44,15 @@ class DiscordQueueSong extends DiscordSong implements QueueSong {
         }
     }
 
+    void delete() throws SQLException {
+        try (Connection connection = database.dataSource.getConnection()) {
+            PreparedStatement statement = database.prepare(connection, Statement.QUEUE_SONGS_DELETE);
+            statement.setString(1, server.getId());
+            statement.setInt(2, getId());
+            statement.execute();
+        }
+    }
+
     @Override
     public SongQueue getSongQueue() {
         return server.getSongQueue();

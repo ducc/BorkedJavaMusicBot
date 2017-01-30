@@ -10,6 +10,7 @@ import net.dv8tion.jda.core.events.guild.GuildLeaveEvent;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import org.json.JSONObject;
+import ovh.not.javamusicbot.impl.DiscordServer;
 import ovh.not.javamusicbot.lib.server.Server;
 
 import java.sql.SQLException;
@@ -119,6 +120,11 @@ class Listener extends ListenerAdapter {
             server.stop();
             server.getSongQueue().clear();
             server.disconnect();
+            try {
+                ((DiscordServer) server).delete();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 }
