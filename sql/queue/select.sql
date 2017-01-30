@@ -1,0 +1,1 @@
+SELECT songs FROM queues WHERE server_id=?;

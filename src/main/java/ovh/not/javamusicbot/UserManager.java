@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class UserManager {
-    final Map<net.dv8tion.jda.core.entities.User, User> users = new HashMap<>();
+    final Map<String, User> users = new HashMap<>();
 
     private final Database database;
 
@@ -16,12 +16,12 @@ public class UserManager {
         this.database = database;
     }
 
-    public User get(net.dv8tion.jda.core.entities.User user) throws SQLException {
-        if (!users.containsKey(user)) {
-            User u = new DiscordUser(database, user);
-            users.put(user, u);
+    public User get(String id) throws SQLException {
+        if (!users.containsKey(id)) {
+            User u = new DiscordUser(database, id);
+            users.put(id, u);
             return u;
         }
-        return users.get(user);
+        return users.get(id);
     }
 }

@@ -1,0 +1,1 @@
+SELECT voice_channel FROM servers WHERE id=?;

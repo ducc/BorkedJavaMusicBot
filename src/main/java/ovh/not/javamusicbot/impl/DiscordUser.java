@@ -11,11 +11,11 @@ import java.sql.SQLException;
 
 public class DiscordUser implements User {
     private final Database database;
-    private final net.dv8tion.jda.core.entities.User user;
+    private final String id;
 
-    public DiscordUser(Database database, net.dv8tion.jda.core.entities.User user) throws SQLException {
+    public DiscordUser(Database database, String id) throws SQLException {
         this.database = database;
-        this.user = user;
+        this.id = id;
         init();
     }
 
@@ -35,6 +35,6 @@ public class DiscordUser implements User {
 
     @Override
     public String getId() {
-        return user.getId();
+        return id;
     }
 }

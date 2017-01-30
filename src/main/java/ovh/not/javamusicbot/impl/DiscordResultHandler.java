@@ -10,30 +10,45 @@ import ovh.not.javamusicbot.lib.user.User;
 
 import java.sql.SQLException;
 import java.util.Date;
+import java.util.function.Consumer;
 
 class DiscordResultHandler implements AudioLoadResultHandler {
     private final Database database;
     private final Server server;
     private final User addedBy;
     private final Date dateAdded;
+    private final Consumer<AudioTrack> callback;
 
     DiscordResultHandler(Database database, Server server, User addedBy, Date dateAdded) {
         this.database = database;
         this.server = server;
         this.addedBy = addedBy;
         this.dateAdded = dateAdded;
+        this.callback = null;
+    }
+
+    DiscordResultHandler(Database database, Server server, Consumer<AudioTrack> callback) {
+        this.database = database;
+        this.server = server;
+        this.addedBy = null;
+        this.dateAdded = null;
+        this.callback = callback;
     }
 
     @Override
     public void trackLoaded(AudioTrack audioTrack) {
-        DiscordQueueSong song;
-        try {
-            song = new DiscordQueueSong(audioTrack, database, server, addedBy, dateAdded);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return;
+        if (callback == null) {
+            DiscordQueueSong song;
+            try {
+                song = new DiscordQueueSong(audioTrack, database, server, addedBy, dateAdded);
+            } catch (SQLException e) {
+                e.printStackTrace();
+                return;
+            }
+            server.play(song);
+        } else {
+            callback.accept(audioTrack);
         }
-        server.play(song);
     }
 
     @Override
@@ -43,14 +58,7 @@ class DiscordResultHandler implements AudioLoadResultHandler {
         } else if (audioPlaylist.isSearchResult()) {
             // TODO
         } else {
-            for (AudioTrack track : audioPlaylist.getTracks()) {
-                try {
-                    server.play(new DiscordQueueSong(track, database, server, addedBy, dateAdded));
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                    return;
-                }
-            }
+            audioPlaylist.getTracks().forEach(this::trackLoaded);
         }
     }
 

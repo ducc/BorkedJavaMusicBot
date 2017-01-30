@@ -3,6 +3,7 @@ package ovh.not.javamusicbot.impl;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import ovh.not.javamusicbot.Database;
 import ovh.not.javamusicbot.Statement;
+import ovh.not.javamusicbot.lib.server.Server;
 import ovh.not.javamusicbot.lib.song.Song;
 
 import java.sql.Connection;
@@ -12,24 +13,37 @@ import java.sql.SQLException;
 
 abstract class DiscordSong implements Song {
     private final Database database;
-    final AudioTrack audioTrack;
-    private int id = 0;
-    private final String title;
-    private final String author;
-    private final long duration;
+    private final Server server;
+    AudioTrack audioTrack = null;
+    private long id = 0;
+    private String source = null;
+    private String identifier = null;
+    private String title = null;
+    private String author = null;
+    private long duration = 0;
 
-    DiscordSong(Database database, AudioTrack audioTrack) throws SQLException {
+    DiscordSong(Database database, Server server, AudioTrack audioTrack) throws SQLException {
         this.database = database;
+        this.server = server;
         this.audioTrack = audioTrack;
+        this.source = audioTrack.getSourceManager().getSourceName();
+        this.identifier = audioTrack.getIdentifier();
         this.title = audioTrack.getInfo().title;
         this.author = audioTrack.getInfo().author;
         this.duration = audioTrack.getDuration();
-        init();
+        initIdentifier();
     }
 
-    private void init() throws SQLException {
+    DiscordSong(Database database, Server server, long id) throws SQLException {
+        this.database = database;
+        this.server = server;
+        this.id = id;
+        initId();
+    }
+
+    private void initIdentifier() throws SQLException {
         try (Connection connection = database.dataSource.getConnection()) {
-            PreparedStatement statement = database.prepare(connection, Statement.SONG_SELECT);
+            PreparedStatement statement = database.prepare(connection, Statement.SONG_SELECT_BY_IDENTIFIER);
             statement.setString(1, getSource());
             statement.setString(2, getIdentifier());
             ResultSet resultSet = statement.executeQuery();
@@ -61,19 +75,41 @@ abstract class DiscordSong implements Song {
         }
     }
 
+    private void initId() throws SQLException {
+        try (Connection connection = database.dataSource.getConnection()) {
+            PreparedStatement statement = database.prepare(connection, Statement.SONG_SELECT_BY_ID);
+            statement.setLong(1, getId());
+            ResultSet resultSet = statement.executeQuery();
+            if (!resultSet.isBeforeFirst()) {
+                return;
+            } else {
+                resultSet.next();
+                this.source = resultSet.getString(1);
+                this.identifier = resultSet.getString(2);
+                this.title = resultSet.getString(3);
+                this.author = resultSet.getString(4);
+                this.duration = resultSet.getLong(5);
+                server.load(identifier, track -> {
+                    audioTrack = track;
+                });
+            }
+            resultSet.close();
+        }
+    }
+
     @Override
-    public int getId() {
+    public long getId() {
         return id;
     }
 
     @Override
     public String getSource() {
-        return audioTrack.getSourceManager().getSourceName();
+        return source;
     }
 
     @Override
     public String getIdentifier() {
-        return audioTrack.getIdentifier();
+        return identifier;
     }
 
     @Override

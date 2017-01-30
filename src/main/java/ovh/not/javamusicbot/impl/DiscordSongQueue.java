@@ -2,6 +2,7 @@ package ovh.not.javamusicbot.impl;
 
 import ovh.not.javamusicbot.Database;
 import ovh.not.javamusicbot.Statement;
+import ovh.not.javamusicbot.UserManager;
 import ovh.not.javamusicbot.lib.server.Server;
 import ovh.not.javamusicbot.lib.song.QueueSong;
 import ovh.not.javamusicbot.lib.song.SongQueue;
@@ -15,23 +16,37 @@ class DiscordSongQueue implements SongQueue {
     private final Queue<QueueSong> queue = new LinkedList<>();
     private final Database database;
     private final Server server;
-    QueueSong current = null;
+    private final UserManager userManager;
+    private QueueSong current = null;
 
-    DiscordSongQueue(Database database, Server server) throws SQLException {
+    DiscordSongQueue(Database database, Server server, UserManager userManager) throws SQLException {
         this.database = database;
         this.server = server;
+        this.userManager = userManager;
         init();
     }
 
     private void init() throws SQLException {
         try (Connection connection = database.dataSource.getConnection()) {
-            PreparedStatement statement = database.prepare(connection, Statement.QUEUE_EXISTS);
+            PreparedStatement statement = database.prepare(connection, Statement.QUEUE_SELECT);
             statement.setString(1, server.getId());
             ResultSet resultSet = statement.executeQuery();
             if (!resultSet.isBeforeFirst()) {
                 statement = database.prepare(connection, Statement.QUEUE_INSERT);
                 statement.setString(1, server.getId());
                 statement.execute();
+            } else {
+                resultSet.next();
+                Array array = resultSet.getArray(1);
+                if (array != null) {
+                    Long[] songArray = (Long[]) array.getArray();
+                    current = new DiscordQueueSong(database, server, userManager, songArray[0]);
+                    LinkedList<QueueSong> queue = (LinkedList<QueueSong>) this.queue;
+                    for (int i = 1; i < songArray.length; i++) {
+                        queue.add(new DiscordQueueSong(database, server, userManager, songArray[i]));
+                    }
+                    server.play(current);
+                }
             }
             resultSet.close();
         }
@@ -112,8 +127,22 @@ class DiscordSongQueue implements SongQueue {
         return current;
     }
 
+    private void deleteAll() throws SQLException {
+        try (Connection connection = database.dataSource.getConnection()) {
+            PreparedStatement statement = database.prepare(connection, Statement.QUEUE_SONGS_DELETE_ALL);
+            statement.setString(1, server.getId());
+            statement.execute();
+        }
+    }
+
     @Override
     public void clear() {
+        try {
+            deleteAll();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return;
+        }
         queue.clear();
         try {
             update();

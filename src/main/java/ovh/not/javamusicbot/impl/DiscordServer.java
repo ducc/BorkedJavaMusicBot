@@ -23,13 +23,11 @@ import ovh.not.javamusicbot.lib.song.QueueSong;
 import ovh.not.javamusicbot.lib.song.SongQueue;
 import ovh.not.javamusicbot.lib.user.User;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.function.Consumer;
 
 public class DiscordServer extends AudioEventAdapter implements Server {
     private final Collection<ServerProperty> serverProperties = new ArrayList<>();
@@ -53,15 +51,15 @@ public class DiscordServer extends AudioEventAdapter implements Server {
         audioPlayer.addListener(this);
         AudioSendHandler audioSendHandler = new AudioPlayerSendHandler(audioPlayer);
         guild.getAudioManager().setSendingHandler(audioSendHandler);
-        owner = userManager.get(guild.getOwner().getUser());
+        owner = userManager.get(guild.getOwner().getUser().getId());
         init();
         initProperties();
-        songQueue = new DiscordSongQueue(database, this);
+        songQueue = new DiscordSongQueue(database, this, userManager);
     }
 
     private void init() throws SQLException {
         try (Connection connection = database.dataSource.getConnection()) {
-            PreparedStatement statement = database.prepare(connection, Statement.SERVER_EXISTS);
+            PreparedStatement statement = database.prepare(connection, Statement.SERVER_SELECT);
             statement.setString(1, getId());
             ResultSet resultSet = statement.executeQuery();
             if (!resultSet.isBeforeFirst()) {
@@ -69,6 +67,13 @@ public class DiscordServer extends AudioEventAdapter implements Server {
                 statement.setString(1, getId());
                 statement.setString(2, owner.getId());
                 statement.execute();
+            } else {
+                resultSet.next();
+                try {
+                    connect(guild.getVoiceChannelById(resultSet.getString(1)));
+                } catch (AlreadyConnectedException | PermissionException e) {
+                    e.printStackTrace();
+                }
             }
             resultSet.close();
         }
@@ -111,6 +116,12 @@ public class DiscordServer extends AudioEventAdapter implements Server {
     @Override
     public void load(String song, User addedBy, Date dateAdded) {
         DiscordResultHandler resultHandler = new DiscordResultHandler(database, this, addedBy, dateAdded);
+        audioPlayerManager.loadItem(song, resultHandler);
+    }
+
+    @Override
+    public void load(String song, Consumer<AudioTrack> callback) {
+        DiscordResultHandler resultHandler = new DiscordResultHandler(database, this, callback);
         audioPlayerManager.loadItem(song, resultHandler);
     }
 
@@ -160,6 +171,19 @@ public class DiscordServer extends AudioEventAdapter implements Server {
         return songQueue.getCurrentSong();
     }
 
+    private void updateVoiceChannel() throws SQLException {
+        try (Connection connection = database.dataSource.getConnection()) {
+            PreparedStatement statement = database.prepare(connection, Statement.SERVER_UPDATE_VOICE_CHANNEL);
+            if (voiceChannel == null) {
+                statement.setString(1, null);
+            } else {
+                statement.setString(1, voiceChannel.getId());
+            }
+            statement.setString(2, getId());
+            statement.execute();
+        }
+    }
+
     @Override
     public void connect(VoiceChannel voiceChannel) throws AlreadyConnectedException, PermissionException {
         if (guild.getAudioManager().isConnected()) {
@@ -173,6 +197,11 @@ public class DiscordServer extends AudioEventAdapter implements Server {
             audioManager.openAudioConnection(voiceChannel);
             audioManager.setSelfDeafened(true);
             this.voiceChannel = voiceChannel;
+            try {
+                updateVoiceChannel();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         } catch (net.dv8tion.jda.core.exceptions.PermissionException e) {
             throw new PermissionException();
         }
@@ -182,6 +211,11 @@ public class DiscordServer extends AudioEventAdapter implements Server {
     public void disconnect() {
         guild.getAudioManager().closeAudioConnection();
         this.voiceChannel = null;
+        try {
+            updateVoiceChannel();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

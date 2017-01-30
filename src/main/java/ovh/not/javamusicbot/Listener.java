@@ -55,7 +55,7 @@ class Listener extends ListenerAdapter {
         context.event = event;
         context.server = serverManager.get(event.getGuild());
         try {
-            context.user = userManager.get(event.getAuthor());
+            context.user = userManager.get(event.getAuthor().getId());
         } catch (SQLException e) {
             event.getTextChannel().sendMessage("An error occurred!").queue();
             e.printStackTrace();

@@ -1,0 +1,1 @@
+DELETE FROM queue_songs WHERE server_id=?;
