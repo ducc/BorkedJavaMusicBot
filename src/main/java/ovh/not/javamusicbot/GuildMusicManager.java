@@ -2,6 +2,7 @@ package ovh.not.javamusicbot;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
+import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
@@ -31,6 +32,9 @@ public class GuildMusicManager {
 
     public void open(VoiceChannel channel, User user) {
         try {
+            if (!guild.getSelfMember().hasPermission(channel, Permission.VOICE_CONNECT)) {
+                throw new PermissionException(Permission.VOICE_CONNECT, "manual check (custom branch)");
+            }
             guild.getAudioManager().openAudioConnection(channel);
             guild.getAudioManager().setSelfDeafened(true);
             this.channel = channel;
